@@ -1,0 +1,17 @@
+{
+  "paper_count": 4,
+  "question_count": 12,
+  "evidence_count": 1199,
+  "review_sample_count": 245,
+  "review_status": "pending human review",
+  "held_out": 0,
+  "human_verified_questions": 0,
+  "issues": [],
+  "source_hashes": {
+    "P01": "9fd87b02ecc96c1ecf2b8c2166faf969a2acb187ab3e1e9333b26d226387ff55",
+    "P02": "af6b1bd620f81bfaea81edf8227484588e1fcc2427d6b5020fa17454d7566c70",
+    "P03": "8ce7b83971a14508ca711a27c875c9b6914c4f6767cf3150fb1ca6c07aa056d6",
+    "P04": "df47ccf70db624afc34122db19acead19b653fa81b3b8691e55e4768a50d0004"
+  },
+  "research_readiness": "Requires 10-20 license-verified papers, 30-50 human-authored/verified questions, untouched held-out set and completed human scoring"
+}

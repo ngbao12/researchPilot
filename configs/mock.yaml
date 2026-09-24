@@ -1,0 +1,18 @@
+# Test doubles only. Random hash embeddings do not measure retrieval quality.
+index:
+  chunk_size: 512
+  chunk_overlap: 32
+  min_chunk_size: 50
+  embedding_provider: mock
+  embedding_model: mock
+  embedding_dim: 384
+retrieve:
+  top_k: 5
+  score_threshold: 0.0
+generate:
+  llm_provider: mock
+  llm_model: mock-deterministic
+  temperature: 0.0
+  max_tokens: 512
+  seed: 42
+  abstention_threshold: 0.0

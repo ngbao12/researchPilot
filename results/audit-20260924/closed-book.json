@@ -1,0 +1,326 @@
+{
+  "run_id": "run-e87dfc5d",
+  "mode": "closed-book",
+  "model_id": "mock/deterministic",
+  "config": {
+    "top_k": 5,
+    "temperature": 0.0,
+    "seed": 42
+  },
+  "predictions": [
+    {
+      "question_id": "Q01",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.04787499999997502,
+        "usage": {
+          "prompt_tokens": 48,
+          "completion_tokens": 13,
+          "total_tokens": 61
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.320651"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.320660"
+    },
+    {
+      "question_id": "Q02",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.023124999999957208,
+        "usage": {
+          "prompt_tokens": 53,
+          "completion_tokens": 13,
+          "total_tokens": 66
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.321141"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.321147"
+    },
+    {
+      "question_id": "Q03",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.024250000000003435,
+        "usage": {
+          "prompt_tokens": 52,
+          "completion_tokens": 13,
+          "total_tokens": 65
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.321608"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.321616"
+    },
+    {
+      "question_id": "Q04",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.020583999999990166,
+        "usage": {
+          "prompt_tokens": 47,
+          "completion_tokens": 13,
+          "total_tokens": 60
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.322134"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.322141"
+    },
+    {
+      "question_id": "Q05",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.02070799999998041,
+        "usage": {
+          "prompt_tokens": 49,
+          "completion_tokens": 13,
+          "total_tokens": 62
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.322566"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.322572"
+    },
+    {
+      "question_id": "Q06",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.019917000000035934,
+        "usage": {
+          "prompt_tokens": 47,
+          "completion_tokens": 13,
+          "total_tokens": 60
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.323009"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.323016"
+    },
+    {
+      "question_id": "Q07",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.017333999999979977,
+        "usage": {
+          "prompt_tokens": 53,
+          "completion_tokens": 13,
+          "total_tokens": 66
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.323425"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.323430"
+    },
+    {
+      "question_id": "Q08",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.019417000000021556,
+        "usage": {
+          "prompt_tokens": 47,
+          "completion_tokens": 13,
+          "total_tokens": 60
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.323830"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.323836"
+    },
+    {
+      "question_id": "Q09",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.023166000000018894,
+        "usage": {
+          "prompt_tokens": 52,
+          "completion_tokens": 13,
+          "total_tokens": 65
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.324302"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.324310"
+    },
+    {
+      "question_id": "Q10",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.01787500000000053,
+        "usage": {
+          "prompt_tokens": 46,
+          "completion_tokens": 13,
+          "total_tokens": 59
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.324785"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.324790"
+    },
+    {
+      "question_id": "Q11",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.02199999999996649,
+        "usage": {
+          "prompt_tokens": 45,
+          "completion_tokens": 13,
+          "total_tokens": 58
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.325273"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.325307"
+    },
+    {
+      "question_id": "Q12",
+      "answer": {
+        "answer": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "mock/deterministic",
+        "model_version": "1.0.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.023790999999995233,
+        "usage": {
+          "prompt_tokens": 47,
+          "completion_tokens": 13,
+          "total_tokens": 60
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence\n\nThe provided evidence does not contain enough information to answer this question.",
+        "timestamp": "2026-09-24T02:14:55.325940"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:14:55.325948"
+    }
+  ],
+  "started_at": "2026-09-24T02:14:55.319590",
+  "completed_at": "2026-09-24T02:14:55.325953"
+}

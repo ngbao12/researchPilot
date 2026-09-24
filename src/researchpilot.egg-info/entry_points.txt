@@ -1,0 +1,3 @@
+[console_scripts]
+researchpilot = researchpilot.cli:main
+researchpilot-web = researchpilot.web:main

@@ -1,0 +1,99 @@
+{
+  "manifest_id": "manifest-cb14d070",
+  "created_at": "2026-09-24T02:40:06.827343",
+  "papers": [
+    {
+      "paper_id": "P01",
+      "title": "MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications",
+      "authors": [
+        "Andrew G. Howard",
+        "Menglong Zhu",
+        "Bo Chen",
+        "Dmitry Kalenichenko",
+        "Weijun Wang",
+        "Tobias Weyand",
+        "Marco Andreetto",
+        "Hartwig Adam"
+      ],
+      "year": 2017,
+      "source_url": "https://arxiv.org/abs/1704.04861",
+      "local_path": "data/papers/P01.pdf",
+      "license": "arXiv-nonexclusive-distrib-1.0",
+      "license_url": "https://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+      "license_checked_at": "2026-09-24",
+      "sha256": "9fd87b02ecc96c1ecf2b8c2166faf969a2acb187ab3e1e9333b26d226387ff55",
+      "pages": null,
+      "domain": "efficient_vision_models",
+      "notes": "Introduces depthwise separable convolutions for mobile architectures; License link checked on source abstract page. Local PDF identified by SHA-256; PDFs excluded from source control."
+    },
+    {
+      "paper_id": "P02",
+      "title": "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks",
+      "authors": [
+        "Mingxing Tan",
+        "Quoc V. Le"
+      ],
+      "year": 2019,
+      "source_url": "https://arxiv.org/abs/1905.11946",
+      "local_path": "data/papers/P02.pdf",
+      "license": "arXiv-nonexclusive-distrib-1.0",
+      "license_url": "https://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+      "license_checked_at": "2026-09-24",
+      "sha256": "af6b1bd620f81bfaea81edf8227484588e1fcc2427d6b5020fa17454d7566c70",
+      "pages": null,
+      "domain": "efficient_vision_models",
+      "notes": "Proposes compound scaling method for CNNs; License link checked on source abstract page. Local PDF identified by SHA-256; PDFs excluded from source control."
+    },
+    {
+      "paper_id": "P03",
+      "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+      "authors": [
+        "Alexey Dosovitskiy",
+        "Lucas Beyer",
+        "Alexander Kolesnikov",
+        "Dirk Weissenborn",
+        "Xiaohua Zhai",
+        "Thomas Unterthiner",
+        "Mostafa Dehghani",
+        "Matthias Minderer",
+        "Georg Heigold",
+        "Sylvain Gelly",
+        "Jakob Uszkoreit",
+        "Neil Houlsby"
+      ],
+      "year": 2021,
+      "source_url": "https://arxiv.org/abs/2010.11929",
+      "local_path": "data/papers/P03.pdf",
+      "license": "arXiv-nonexclusive-distrib-1.0",
+      "license_url": "https://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+      "license_checked_at": "2026-09-24",
+      "sha256": "8ce7b83971a14508ca711a27c875c9b6914c4f6767cf3150fb1ca6c07aa056d6",
+      "pages": null,
+      "domain": "efficient_vision_models",
+      "notes": "Vision Transformer (ViT) - applying transformers to image recognition; License link checked on source abstract page. Local PDF identified by SHA-256; PDFs excluded from source control."
+    },
+    {
+      "paper_id": "P04",
+      "title": "EfficientViT: Multi-Scale Linear Attention for High-Resolution Dense Prediction",
+      "authors": [
+        "Han Cai",
+        "Junyan Li",
+        "Muyan Hu",
+        "Chuang Gan",
+        "Song Han"
+      ],
+      "year": 2023,
+      "source_url": "https://arxiv.org/abs/2205.14756",
+      "local_path": "data/papers/P04.pdf",
+      "license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "license_checked_at": "2026-09-24",
+      "sha256": "df47ccf70db624afc34122db19acead19b653fa81b3b8691e55e4768a50d0004",
+      "pages": null,
+      "domain": "efficient_vision_models",
+      "notes": "Efficient vision transformer with multi-scale attention; License link checked on source abstract page. Local PDF identified by SHA-256; PDFs excluded from source control."
+    }
+  ],
+  "domain": "efficient_vision_models",
+  "description": "Open-access papers on efficient vision models and architectures from arXiv"
+}

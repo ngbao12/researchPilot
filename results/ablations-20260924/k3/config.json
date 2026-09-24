@@ -1,0 +1,74 @@
+{
+  "settings": {
+    "ingest": {
+      "max_file_size_mb": 50,
+      "max_pages": 200,
+      "extract_tables": true,
+      "extract_figures": true,
+      "extract_captions": true
+    },
+    "index": {
+      "chunk_size": 900,
+      "chunk_overlap": 80,
+      "min_chunk_size": 30,
+      "embedding_provider": "lexical",
+      "embedding_model": "lexical-hash-v1",
+      "embedding_dim": 4096,
+      "dedup_threshold": 0.99
+    },
+    "retrieve": {
+      "top_k": 5,
+      "score_threshold": 0.05
+    },
+    "generate": {
+      "llm_provider": "extractive",
+      "llm_model": "quotes-v1",
+      "temperature": 0.0,
+      "max_tokens": 512,
+      "seed": 42,
+      "abstention_threshold": 0.15
+    }
+  },
+  "top_k": 3,
+  "split": "all",
+  "without_captions": false,
+  "questions_sha256": "15ff3be199994c08af22378b43491b806076481591ff5be0439db382c4d4e1dc",
+  "question_ids": [
+    "Q01",
+    "Q02",
+    "Q03",
+    "Q04",
+    "Q05",
+    "Q06",
+    "Q07",
+    "Q08",
+    "Q09",
+    "Q10",
+    "Q11",
+    "Q12"
+  ],
+  "index_config": {
+    "chunk_size": 900,
+    "chunk_overlap": 80,
+    "min_chunk_size": 30,
+    "embedding_model": "lexical-hash-v1",
+    "embedding_provider": "lexical",
+    "embedding_dim": 4096,
+    "index_type": "faiss_flat",
+    "dedup_threshold": 0.99,
+    "batch_size": 32
+  },
+  "index_sha256": "809001dd22ca7d8fb36c5ab89e47dead6ee985c71e92315a431c2a40daf68e35",
+  "corpus_sha256": "a557a323eca0997daba5b4910323b7fd818637ceedbe6a0f842ac65256f2ddee",
+  "hardware": "macOS-15.1.1-arm64-arm-64bit",
+  "processor": "arm",
+  "python": "3.11.12 (main, Apr  8 2025, 14:15:29) [Clang 16.0.0 (clang-1600.0.26.6)]",
+  "packages": {
+    "numpy": "2.4.2",
+    "pydantic": "2.12.5",
+    "faiss-cpu": "1.13.2",
+    "pymupdf": "1.26.7"
+  },
+  "input_representation": "text/table/captions; no image inference",
+  "generation_kind": "offline demonstration"
+}

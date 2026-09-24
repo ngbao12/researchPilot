@@ -1,0 +1,25 @@
+# Offline lexical retrieval + literal evidence quotations. No API calls.
+ingest:
+  max_file_size_mb: 50
+  max_pages: 200
+  extract_tables: true
+  extract_figures: true
+  extract_captions: true
+index:
+  chunk_size: 900
+  chunk_overlap: 80
+  min_chunk_size: 100
+  embedding_provider: lexical
+  embedding_model: lexical-hash-v1
+  embedding_dim: 4096
+  dedup_threshold: 0.99
+retrieve:
+  top_k: 5
+  score_threshold: 0.05
+generate:
+  llm_provider: extractive
+  llm_model: quotes-v1
+  temperature: 0.0
+  max_tokens: 512
+  seed: 42
+  abstention_threshold: 0.15

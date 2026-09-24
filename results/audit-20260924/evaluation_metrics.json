@@ -1,0 +1,62 @@
+[
+  {
+    "mode": "closed-book",
+    "model_id": "mock/deterministic",
+    "total_questions": 12,
+    "abstained": 12,
+    "answered": 0,
+    "avg_citation_precision": 1.0,
+    "avg_citation_support_rate": 1.0,
+    "latency_p50_ms": 0.02199999999996649,
+    "latency_p95_ms": 0.04787499999997502,
+    "total_tokens": 742,
+    "total_prompt_tokens": 586,
+    "total_completion_tokens": 156,
+    "abstention_stats": {
+      "correct_abstention": 2,
+      "incorrect_abstention": 10,
+      "missed_abstention": 0,
+      "correct_answer": 0
+    }
+  },
+  {
+    "mode": "table-rag",
+    "model_id": "mock/deterministic",
+    "total_questions": 12,
+    "abstained": 1,
+    "answered": 11,
+    "avg_citation_precision": 1.0,
+    "avg_citation_support_rate": 0.08333333333333333,
+    "latency_p50_ms": 0.0767500000000143,
+    "latency_p95_ms": 0.13262499999999733,
+    "total_tokens": 3087,
+    "total_prompt_tokens": 2944,
+    "total_completion_tokens": 143,
+    "abstention_stats": {
+      "correct_abstention": 0,
+      "incorrect_abstention": 1,
+      "missed_abstention": 2,
+      "correct_answer": 9
+    }
+  },
+  {
+    "mode": "text-rag",
+    "model_id": "mock/deterministic",
+    "total_questions": 12,
+    "abstained": 1,
+    "answered": 11,
+    "avg_citation_precision": 1.0,
+    "avg_citation_support_rate": 0.08333333333333333,
+    "latency_p50_ms": 0.07804200000000039,
+    "latency_p95_ms": 0.40120800000004175,
+    "total_tokens": 2269,
+    "total_prompt_tokens": 2126,
+    "total_completion_tokens": 143,
+    "abstention_stats": {
+      "correct_abstention": 0,
+      "incorrect_abstention": 1,
+      "missed_abstention": 2,
+      "correct_answer": 9
+    }
+  }
+]

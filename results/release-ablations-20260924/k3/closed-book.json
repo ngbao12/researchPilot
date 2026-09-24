@@ -1,0 +1,455 @@
+{
+  "run_id": "run-a21c1768",
+  "mode": "closed-book",
+  "model_id": "extractive/quotes-v1",
+  "config": {
+    "settings": {
+      "ingest": {
+        "max_file_size_mb": 50,
+        "max_pages": 200,
+        "extract_tables": true,
+        "extract_figures": true,
+        "extract_captions": true
+      },
+      "index": {
+        "chunk_size": 900,
+        "chunk_overlap": 80,
+        "min_chunk_size": 30,
+        "embedding_provider": "lexical",
+        "embedding_model": "lexical-hash-v1",
+        "embedding_dim": 4096,
+        "dedup_threshold": 0.99
+      },
+      "retrieve": {
+        "top_k": 5,
+        "score_threshold": 0.05
+      },
+      "generate": {
+        "llm_provider": "extractive",
+        "llm_model": "quotes-v1",
+        "temperature": 0.0,
+        "max_tokens": 512,
+        "seed": 42,
+        "abstention_threshold": 0.15
+      }
+    },
+    "top_k": 3,
+    "split": "all",
+    "without_captions": false,
+    "questions_sha256": "15ff3be199994c08af22378b43491b806076481591ff5be0439db382c4d4e1dc",
+    "question_ids": [
+      "Q01",
+      "Q02",
+      "Q03",
+      "Q04",
+      "Q05",
+      "Q06",
+      "Q07",
+      "Q08",
+      "Q09",
+      "Q10",
+      "Q11",
+      "Q12"
+    ],
+    "index_config": {
+      "chunk_size": 900,
+      "chunk_overlap": 80,
+      "min_chunk_size": 30,
+      "embedding_model": "lexical-hash-v1",
+      "embedding_provider": "lexical",
+      "embedding_dim": 4096,
+      "index_type": "faiss_flat",
+      "dedup_threshold": 0.99,
+      "batch_size": 32
+    },
+    "index_sha256": "809001dd22ca7d8fb36c5ab89e47dead6ee985c71e92315a431c2a40daf68e35",
+    "corpus_sha256": "3f7422e7fea12e2f77b216e5782432afa3e22adb87d27d797d973edf5eeda660",
+    "hardware": "macOS-15.1.1-arm64-arm-64bit",
+    "processor": "arm",
+    "python": "3.11.12 (main, Apr  8 2025, 14:15:29) [Clang 16.0.0 (clang-1600.0.26.6)]",
+    "packages": {
+      "numpy": "2.4.2",
+      "pydantic": "2.12.5",
+      "faiss-cpu": "1.13.2",
+      "pymupdf": "1.26.7"
+    },
+    "input_representation": "text/table/captions; no image inference",
+    "generation_kind": "offline demonstration"
+  },
+  "predictions": [
+    {
+      "question_id": "Q01",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.32954199969026376,
+        "usage": {
+          "prompt_tokens": 48,
+          "completion_tokens": 1,
+          "total_tokens": 49
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: What is the key architectural innovation in MobileNets that reduces computational cost?\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.00279200003205915,
+        "timestamp": "2026-09-24T02:38:45.986000"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986067"
+    },
+    {
+      "question_id": "Q02",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.036500000078376615,
+        "usage": {
+          "prompt_tokens": 53,
+          "completion_tokens": 1,
+          "total_tokens": 54
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: What is the compound scaling method proposed in EfficientNet, and how does it differ from single-dimension scaling?\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.0008750002962187864,
+        "timestamp": "2026-09-24T02:38:45.986105"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986111"
+    },
+    {
+      "question_id": "Q03",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.025499999992462108,
+        "usage": {
+          "prompt_tokens": 52,
+          "completion_tokens": 1,
+          "total_tokens": 53
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: What ImageNet top-1 accuracy does EfficientNet-B7 achieve, and how does it compare to the previous best?\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.0006250002115848474,
+        "timestamp": "2026-09-24T02:38:45.986136"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986140"
+    },
+    {
+      "question_id": "Q04",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.021332999949663645,
+        "usage": {
+          "prompt_tokens": 47,
+          "completion_tokens": 1,
+          "total_tokens": 48
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: How does the Vision Transformer (ViT) handle variable-resolution images during inference?\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.000499999714520527,
+        "timestamp": "2026-09-24T02:38:45.986161"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986166"
+    },
+    {
+      "question_id": "Q05",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.02020900001298287,
+        "usage": {
+          "prompt_tokens": 49,
+          "completion_tokens": 1,
+          "total_tokens": 50
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: Compare the scaling approaches of MobileNets and EfficientNet for achieving different accuracy-efficiency tradeoffs.\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.0004169996827840805,
+        "timestamp": "2026-09-24T02:38:45.986186"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986189"
+    },
+    {
+      "question_id": "Q06",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.02154200001314166,
+        "usage": {
+          "prompt_tokens": 47,
+          "completion_tokens": 1,
+          "total_tokens": 48
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: What training data augmentation techniques are common across all four papers?\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.0004170001375314314,
+        "timestamp": "2026-09-24T02:38:45.986214"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986218"
+    },
+    {
+      "question_id": "Q07",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.02725000013015233,
+        "usage": {
+          "prompt_tokens": 50,
+          "completion_tokens": 1,
+          "total_tokens": 51
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: What computation reduction do MobileNets report for 3x3 depthwise separable convolutions versus standard convolutions?\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.00037500012695090845,
+        "timestamp": "2026-09-24T02:38:45.986245"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986248"
+    },
+    {
+      "question_id": "Q08",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.035959000342700165,
+        "usage": {
+          "prompt_tokens": 50,
+          "completion_tokens": 1,
+          "total_tokens": 51
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: Which GPU devices are used for EfficientViT latency and throughput comparisons in Table 2?\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.0010840003596968018,
+        "timestamp": "2026-09-24T02:38:45.986290"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986294"
+    },
+    {
+      "question_id": "Q09",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.022791999981564004,
+        "usage": {
+          "prompt_tokens": 52,
+          "completion_tokens": 1,
+          "total_tokens": 53
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: What is the relationship between patch size and accuracy in ViT according to the ablation results?\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.0005830002010043245,
+        "timestamp": "2026-09-24T02:38:45.986319"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986322"
+    },
+    {
+      "question_id": "Q10",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.021249999917927198,
+        "usage": {
+          "prompt_tokens": 46,
+          "completion_tokens": 1,
+          "total_tokens": 47
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: Does EfficientViT use knowledge distillation from a larger teacher model?\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.000458000158687355,
+        "timestamp": "2026-09-24T02:38:45.986343"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986347"
+    },
+    {
+      "question_id": "Q11",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.021332999949663645,
+        "usage": {
+          "prompt_tokens": 45,
+          "completion_tokens": 1,
+          "total_tokens": 46
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: How does the multi-scale attention mechanism in EfficientViT work?\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.0002920000952144619,
+        "timestamp": "2026-09-24T02:38:45.986368"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986371"
+    },
+    {
+      "question_id": "Q12",
+      "answer": {
+        "answer": "insufficient_evidence",
+        "abstained": true,
+        "citations": [],
+        "retrieved": [],
+        "mode": "closed-book",
+        "model_id": "extractive/quotes-v1",
+        "model_version": "1.0",
+        "prompt_template": "standard_v1",
+        "temperature": 0.0,
+        "seed": 42,
+        "latency_ms": 0.017458999991504243,
+        "usage": {
+          "prompt_tokens": 47,
+          "completion_tokens": 1,
+          "total_tokens": 48
+        },
+        "warnings": [],
+        "raw_response": "insufficient_evidence",
+        "retrieved_evidence": [],
+        "prompt": "Question: Compare the parameter efficiency of ViT-Base and EfficientNet-B7 on ImageNet classification.\n\nAnswer this question to the best of your knowledge. Note: You do NOT have access to any specific papers or evidence for this question. If you cannot confidently answer, state that you have insufficient information.",
+        "system_prompt": "",
+        "usage_kind": "estimated",
+        "retrieval_latency_ms": 0.00033400010579498485,
+        "timestamp": "2026-09-24T02:38:45.986388"
+      },
+      "config": {},
+      "timestamp": "2026-09-24T02:38:45.986391"
+    }
+  ],
+  "started_at": "2026-09-24T02:38:45.985567",
+  "completed_at": "2026-09-24T02:38:45.986396"
+}
