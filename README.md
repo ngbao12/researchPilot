@@ -1,243 +1,202 @@
 # ResearchPilot
 
-A local web workspace and CLI for extracting scientific PDFs, retrieving source evidence and producing page-cited answers. The default works offline after dependency installation: deterministic lexical retrieval plus **literal evidence quotations**, not a pretrained LLM. Mock providers are separate test doubles.
+**Không chỉ đọc câu trả lời — mở được trang paper đứng sau mỗi nhận định.**
 
-**Status:** tested engineering MVP with four local papers and 12 draft questions. This is not a completed 10–20-paper research study. Correctness and semantic citation support are **not measured** until independent human judgments are supplied. See [requirements status](reports/requirements_status.md) and [measured report](reports/experiment_report.md).
+ResearchPilot là workspace chạy trên máy cá nhân để đọc paper, đặt câu hỏi và so sánh tài liệu. Bạn có thể thêm PDF từ máy hoặc đường dẫn Internet, chọn nguồn muốn hỏi, rồi kiểm tra các đoạn trích ngay bên cạnh câu trả lời.
 
-## Setup (Python 3.11)
+Dự án có giao diện **tiếng Việt / English**, tích hợp **Groq, Gemini và OpenAI**, cùng CLI phục vụ truy xuất và đánh giá thử nghiệm. Chế độ offline không cần API key, nhưng chỉ trả trích đoạn từ nguồn, không tổng hợp như LLM.
+
+## Chức năng
+
+- **Thư viện PDF:** nhập file hoặc link PDF/arXiv, nhận diện file trùng, lưu thư viện qua các lần khởi động.
+- **Hỏi và so sánh:** giới hạn câu hỏi theo các paper đã chọn; so sánh hai tài liệu và trả lời phần có căn cứ khi thông tin chưa đầy đủ.
+- **Bằng chứng cạnh câu trả lời:** hiện đoạn nguồn, ý được hỗ trợ và giải thích của model; thu gọn những đoạn truy xuất chưa được sử dụng.
+- **Truy xuất cho câu hỏi trừu tượng:** câu hỏi tổng quan/bài học có thêm bước chọn đoạn theo ngữ nghĩa bằng LLM, sau bước tạo tập ứng viên.
+- **Đối chiếu PDF:** bấm trích dẫn để mở trang nguồn; xem thêm ngữ cảnh hoặc mở PDF gốc.
+- **Cấu hình model trên giao diện:** nhập API key, chọn model và kiểm tra kết nối. Server hỗ trợ nhiều key Groq dự phòng.
+- **Ghi chú nghiên cứu:** lịch sử trong phiên tab và xuất câu trả lời thành Markdown.
+- **CLI đánh giá:** benchmark, ablation, xuất dữ liệu để con người chấm tính đúng và mức hỗ trợ của trích dẫn.
+
+> Đây là bản thử nghiệm dành cho một người dùng trên localhost. Kiểm tra trích dẫn xác nhận đoạn văn có trong nguồn, **không chứng minh mọi diễn giải của model đều đúng**. Dự án chưa có kết quả đánh giá độc lập đủ để công bố độ chính xác của hệ thống.
+
+## Bắt đầu
+
+Yêu cầu **Python 3.11 trở lên**; môi trường được kiểm tra của dự án dùng Python 3.11. Chạy các lệnh dưới đây từ thư mục repository.
+
+### 1. Cài đặt
 
 ```bash
+git clone https://github.com/ngbao12/researchPilot.git
+cd researchPilot
+
 python3.11 -m venv .venv311
 source .venv311/bin/activate
 python -m pip install -r requirements.lock
-python -m pip install --no-deps .
-pytest -q
+python -m pip install '.[api]'
 ```
 
-`requirements.lock` pins the complete tested offline/dev environment. Optional API and semantic embedding dependencies are outside this lock and must be recorded separately for a research run. No API key is needed for the default pipeline. Existing Python 3.9 `.venv` directories should not be used. A regular wheel installation is used because macOS can mark editable `.pth` files hidden, causing Python to skip them. Reinstall with `python -m pip install --no-deps .` after editing source.
+`requirements.lock` cố định môi trường offline và công cụ phát triển. SDK API là dependency bổ sung, chưa được cố định trong lock này. Nếu chỉ dùng offline, thay lệnh cuối bằng `python -m pip install --no-deps .`.
 
-## Giao diện web
-
-Sau khi cài đặt và có corpus/index tại `artifacts/current`, chạy từ thư mục dự án:
+### 2. Tạo thư viện ban đầu
 
 ```bash
-.venv311/bin/researchpilot-web
-# Mở http://127.0.0.1:8765
-# Có thể chọn cổng: .venv311/bin/researchpilot-web --port 8766
-```
-
-Giao diện có thư viện PDF, chọn tài liệu, hỏi/so sánh hai paper, trích dẫn mở đúng trang,
-sổ bằng chứng, lịch sử trong tab và xuất ghi chú Markdown. Chế độ offline hoạt động
-không cần key; thử các câu hỏi mẫu bằng tiếng Anh để khớp với nội dung paper.
-
-Chọn **VI / EN** ở thanh trên cùng để đổi ngôn ngữ. Giao diện ghi nhớ lựa chọn
-ngôn ngữ; câu trả lời mới từ model dùng ngôn ngữ tương ứng. Câu hỏi, câu trả lời
-đã có và trích dẫn nguyên văn không bị dịch lại khi chuyển giao diện.
-
-Để tổng hợp bằng Groq, Gemini hoặc OpenAI:
-
-```bash
-.venv311/bin/python -m pip install 'openai>=1.30.0,<3'
-```
-
-Trong **Kết nối model**, chọn **Groq**, **Gemini** hoặc **OpenAI**, nhập key tùy chỉnh và
-model ID, rồi **Áp dụng**. Key tùy chỉnh có ưu tiên cao hơn key mặc định.
-Nếu để trống key, ứng dụng dùng Groq mặc định trên máy. Chọn **Offline** để
-không gọi API. Lỗi của key tùy chỉnh được báo rõ, không âm thầm đổi nhà cung cấp.
-Nút **Xóa key tùy chỉnh** khôi phục cấu hình mặc định, không xóa key server.
-
-Cấu hình mặc định được đọc từ biến môi trường `GROQ_API_KEY` / `GROQ_MODEL`
-hoặc `.env.local` tại thư mục dự án (biến môi trường có ưu tiên cao hơn).
-`.env.local` bị loại khỏi Git; đặt quyền file `600`. Không chia sẻ file này.
-Model mặc định là `openai/gpt-oss-120b` trên Groq. Model GPT-OSS dùng reasoning
-thấp và ngân sách 2048 token cho giao diện. Tích hợp dựa trên
-[Groq OpenAI compatibility](https://console.groq.com/docs/openai) và
-[Groq reasoning parameters](https://console.groq.com/docs/reasoning).
-
-**Kiểm tra kết nối** xác nhận key truy cập model, không sinh câu trả lời.
-Key mặc định chỉ nằm phía server, không được đưa vào HTML, JavaScript hay API
-trả về trình duyệt. Key tùy chỉnh chỉ giữ trong bộ nhớ tab và từng request,
-không lưu vào file hay browser storage. Tải lại/đóng tab xóa key tùy chỉnh và
-lịch sử; key Groq mặc định vẫn hoạt động. Chỉ lựa chọn ngôn ngữ được lưu trong
-browser storage. Câu hỏi và các đoạn bằng chứng được gửi tới nhà cung cấp đang
-chọn, tính phí trên tài khoản API tương ứng.
-
-Server chỉ bind `127.0.0.1`, dành cho một người dùng trên máy cá nhân. Không có
-đăng nhập hay hỗ trợ triển khai nhiều người dùng qua Internet. Giao diện không thay thế benchmark hay quy trình đánh giá nghiên cứu.
-
-### Thêm paper và kiểm tra bằng chứng
-
-Bấm **+ Thêm paper**, dán link PDF trực tiếp/link arXiv hoặc chọn file PDF trên máy.
-Giới hạn 30 MB, 200 trang; PDF scan cần OCR trước. Paper được xử lý và chọn tự động
-để hỏi ngay. File trùng được nhận diện bằng SHA-256. Thư viện tồn tại sau khi khởi
-động lại server; nhập lỗi không thay thế thư viện đang dùng. Dữ liệu nằm tại
-`data/papers`, `artifacts/library_versions` và con trỏ `artifacts/library-active.json`.
-Link nhập phải trỏ tới tài nguyên Internet công khai; địa chỉ nội bộ bị từ chối.
-
-Ở chế độ web **Text + tables** với API, ứng dụng tìm trên văn bản nguyên trang,
-giữ các hàng bảng ngắn, dịch câu hỏi tiếng Việt sang tiếng Anh để truy xuất và
-phân bổ ngữ cảnh cho nhiều trang. Model trả về các nhận định có trích đoạn;
-server kiểm tra trích đoạn có trong nguồn rồi tự gắn paper/trang. Nếu model
-chép sai đoạn trích, ứng dụng thử sửa một lần và kiểm tra lại; thất bại vẫn từ chối.
-Lượt sửa có thể phát sinh thêm token và độ trễ. Những kiểm tra
-này xác nhận xuất xứ, không chứng minh mọi diễn giải của model đều đúng.
-Các chế độ offline, Text + captions và benchmark CLI vẫn dùng pipeline gốc.
-
-Sổ bằng chứng ưu tiên nguồn thực sự được trích dẫn, tô từ khóa khớp, hiện đoạn
-trích và lý do nguồn xuất hiện. Nguồn chỉ được truy xuất được phân biệt với nguồn
-đã dùng trong câu trả lời. Bấm số trích dẫn để mở đúng trang PDF, hoặc mở rộng
-ngữ cảnh để đối chiếu. Điểm truy xuất không được trình bày như xác suất đúng.
-
-Xem [báo cáo kiểm thử import, Gemini và evidence](reports/ui-import-gemini-evidence-20260924.md).
-
-### Gemini
-
-Chọn **Gemini**, nhập key từ Google AI Studio, kiểm tra model rồi áp dụng.
-Model ID có thể sửa theo quyền tài khoản. Tích hợp dùng
-[Gemini OpenAI compatibility](https://ai.google.dev/gemini-api/docs/openai).
-Key Gemini chỉ nằm trong bộ nhớ tab; để trống vẫn dùng Groq mặc định theo cấu hình
-chung. Đã kiểm thử định tuyến và tham số bằng mock; chưa kiểm thử sinh câu trả
-lời thật với Gemini vì chưa có key Gemini.
-
-## Run
-
-Run commands from the repository root. The manifest contains source URLs and SHA-256 fingerprints. Downloaded PDFs and generated indexes are ignored by Git.
-
-```bash
-# Download if absent, then ingest and index with the SAME configuration.
 python scripts/build_corpus.py --config configs/default.yaml
-# If the four PDFs are already available, use --skip-download.
+```
 
+Script tải các paper trong [manifest](data/papers_manifest.json), trích xuất nội dung và tạo chỉ mục tại `artifacts/current`. Bước này cần Internet nếu PDF chưa có trên máy. Nếu đã có đủ PDF, thêm `--skip-download`.
+
+**Cần hoàn tất bước này trước khi mở web lần đầu.** Không cần dựng lại corpus mỗi lần chạy ứng dụng. Sau khi có thư viện, thêm paper mới trực tiếp trên giao diện.
+
+### 3. Mở ứng dụng
+
+```bash
+python scripts/start_web.py
+```
+
+Truy cập **http://127.0.0.1:8765**. Script chạy server nền và không tạo thêm tiến trình nếu địa chỉ đó đã có workspace hoạt động.
+
+Để chạy trong Terminal và dừng bằng `Ctrl+C`:
+
+```bash
+researchpilot-web --root . --port 8765
+```
+
+Log của server nền nằm ở `tmp/web-server.log`, PID ở `tmp/web-server.pid`. Có thể đổi cổng bằng `python scripts/start_web.py --port 8766`.
+
+## Sử dụng giao diện
+
+1. Chọn các paper trong **Tài liệu trên bàn**, hoặc bấm **+ Thêm paper**.
+2. Mở **Kết nối model**, chọn nhà cung cấp, nhập key và model ID phù hợp với tài khoản. Bấm **Kiểm tra kết nối**, rồi **Áp dụng**.
+3. Chọn **Hỏi tài liệu** hoặc **So sánh hai paper**; chế độ so sánh cần chọn đúng hai tài liệu.
+4. Nhập câu hỏi và bấm **Tìm câu trả lời**. Có thể hỏi bằng tiếng Việt; ngôn ngữ câu trả lời theo lựa chọn **VI / EN**.
+5. Đọc bằng chứng bên cạnh và bấm trích dẫn để đối chiếu trang PDF.
+
+Ví dụ:
+
+- “MobileNet giảm chi phí tính toán bằng cách nào?”
+- “EfficientNet-B7 đạt độ chính xác ImageNet bao nhiêu?”
+- “Điểm đáng học từ thiết kế của ResNet và Transformer là gì?” — cần thêm và chọn hai paper tương ứng.
+
+Bản dịch giao diện không dịch lại câu trả lời đã có hoặc đoạn nguồn nguyên văn. Đoạn trích dài được thu gọn; phần **Xem thêm ngữ cảnh** giữ văn bản trích xuất để đối chiếu.
+
+### Thêm paper
+
+Hỗ trợ file PDF trên máy, link PDF công khai và link arXiv. Giới hạn nhập từ web là **30 MB / 200 trang**. PDF scan cần OCR trước; ứng dụng chưa có OCR tích hợp.
+
+File trùng được nhận diện bằng SHA-256. Dữ liệu thư viện được lưu ở `data/papers`, `artifacts/library_versions` và con trỏ `artifacts/library-active.json`. Import lỗi không thay thế thư viện đang dùng. URL trỏ đến mạng nội bộ bị từ chối.
+
+## API key và quyền riêng tư
+
+| Cách dùng | Cấu hình |
+| --- | --- |
+| Groq, Gemini hoặc OpenAI riêng | Nhập key và model ID trong **Kết nối model** |
+| Groq mặc định cho máy này | Đặt `GROQ_API_KEY` trong môi trường hoặc `.env.local` |
+| Groq dự phòng | Đặt `GROQ_API_KEYS`, các key cách nhau bằng dấu phẩy |
+| Không gửi dữ liệu tới API | Chọn **Offline** |
+
+Ví dụ `.env.local` — thay các giá trị mẫu bằng cấu hình của bạn:
+
+```dotenv
+GROQ_API_KEY=your_primary_groq_key
+GROQ_API_KEYS=your_backup_key_1,your_backup_key_2
+GROQ_MODEL=openai/gpt-oss-120b
+```
+
+```bash
+chmod 600 .env.local
+```
+
+Biến môi trường có ưu tiên hơn `.env.local`. File này được bỏ qua bởi Git; **không commit API key**. Khởi động lại server sau khi thay cấu hình server.
+
+- Key nhập trong tab có ưu tiên hơn key mặc định. Nếu để trống key, ứng dụng dùng Groq mặc định **nếu đã cấu hình trên máy**; repository không cung cấp key dùng chung.
+- Key tùy chỉnh chỉ tồn tại trong bộ nhớ tab và request tới server local. Tải lại hoặc đóng tab sẽ xóa key tùy chỉnh và lịch sử phiên. Lựa chọn ngôn ngữ được lưu riêng trong browser storage.
+- Key mặc định nằm phía server, không được trả về giao diện. Key tùy chỉnh không dùng pool Groq dự phòng của server.
+- Khi gặp giới hạn API, pool Groq có thể chờ hoặc thử key khác. Các key có thể dùng chung quota; thêm key không đồng nghĩa tăng hạn mức.
+- Câu hỏi và các đoạn nguồn được gửi tới nhà cung cấp đang chọn để xử lý. Lượt lập kế hoạch, chọn bằng chứng hoặc sửa trích dẫn có thể phát sinh thêm token và độ trễ.
+- **Kiểm tra kết nối** kiểm tra quyền truy cập model; không bảo đảm một lượt sinh câu trả lời dài sẽ thành công hoặc còn đủ quota.
+
+Gemini dùng adapter tương thích OpenAI. Model khả dụng phụ thuộc tài khoản; có thể sửa model ID trong giao diện. Các bài test mock kiểm tra định tuyến và xử lý lỗi, không thay thế kiểm thử trực tiếp với key thật.
+
+## Câu trả lời và bằng chứng được tạo như thế nào?
+
+```text
+PDF → trích xuất theo trang → chọn ứng viên truy xuất
+                                  ↓
+                 chọn đoạn theo ngữ nghĩa cho câu hỏi tổng quan
+                                  ↓
+                 model tạo nhận định + mã đoạn nguồn
+                                  ↓
+                 kiểm tra nguồn → câu trả lời + trích dẫn trang
+```
+
+Trong luồng web dùng API với `table-rag`, hệ thống truy xuất văn bản trang, giữ ngữ cảnh bảng và diễn giải câu hỏi tiếng Việt thành truy vấn tìm nguồn. Câu hỏi tổng quan/bài học bổ sung các trang mở đầu, cuối tài liệu và bước lựa chọn bằng LLM. Bước này vẫn phụ thuộc tập ứng viên; không phải tìm kiếm ngữ nghĩa toàn bộ corpus bằng embedding.
+
+Model chọn mã đoạn có sẵn; server kiểm tra nguồn và tự gắn paper/trang. Một số lỗi định dạng trích dẫn được thử sửa một lần. Nếu không xác nhận được nguồn, câu trả lời có thể bị giữ lại. Nếu chỉ có căn cứ cho một phần câu hỏi, ứng dụng có thể trả lời phần đó và ghi rõ thông tin còn thiếu.
+
+Phần **Giải thích của model** mô tả liên hệ giữa nguồn và nhận định, không phải kết quả kiểm chứng độc lập. Luôn đọc nguồn khi sử dụng các kết luận quan trọng. Điểm truy xuất không phải xác suất câu trả lời đúng.
+
+Các chế độ khác và benchmark CLI dùng pipeline gốc: trích xuất → chunk có thông tin nguồn → chỉ mục FAISS → truy xuất → sinh câu trả lời → kiểm tra trích dẫn. Kết quả CLI không đại diện đầy đủ cho luồng web mới.
+
+## CLI
+
+Cấu hình mặc định tại [configs/default.yaml](configs/default.yaml) dùng truy xuất lexical và trả trích đoạn offline, không gọi API.
+
+```bash
 researchpilot ask --question "What is the key architectural innovation in MobileNets?" --paper-id P01
 researchpilot ask --question "What accuracy does EfficientNet-B7 achieve?" --paper-id P02 --mode table-rag --json
 researchpilot compare --paper-a P01 --paper-b P02 --question "How do width and resolution scaling differ?"
 researchpilot inspect --query "depthwise separable convolution" --paper-id P01
+```
 
+Để dùng OpenAI trong CLI, đặt `OPENAI_API_KEY` trong môi trường hoặc `.env`, sao chép cấu hình mặc định và sửa `generate.llm_provider: openai`, `generate.llm_model`. Chạy bằng `researchpilot --config PATH ...`. Cấu hình CLI này riêng với kết nối model trên giao diện web.
+
+Provider embedding sentence-transformers là tùy chọn qua `python -m pip install '.[semantic]'`. Đổi provider/model/kích thước embedding cần dựng chỉ mục mới; không dùng chỉ mục cũ với cấu hình khác.
+
+## Đánh giá và phát triển
+
+```bash
 researchpilot benchmark --questions data/questions.jsonl --out results/my-run
 researchpilot evaluate --run results/my-run --out reports/my-run.md
-# Evaluation can be repeated safely. A benchmark refuses to overwrite predictions.
-```
 
-The default artifacts live in `artifacts/current/{corpus,index}`. Individual stages are also available:
-
-```bash
-researchpilot ingest --manifest data/papers_manifest.json --out artifacts/current/corpus
-researchpilot index --corpus artifacts/current/corpus --out artifacts/current/index
-```
-
-Use a new output directory when rebuilding to preserve earlier experiments, and pass its `--index-dir` to query/benchmark commands. `index --config PATH` is honored; global `--config` precedes the subcommand. Query-time embedding configuration must match the saved index. Both `--json` and `--json-output` emit parseable JSON without terminal line wrapping.
-
-## Architecture and guarantees
-
-```text
-PDF -> text / structured tables / captions / extracted image assets
-    -> page-preserving chunks with stable per-evidence IDs
-    -> provenance-aware deduplication -> normalized FAISS index
-    -> filtered top-k -> generator -> citation/coverage guard -> answer or abstention
-                                        |
-                           raw response + prompt + source evidence
-                                        |
-                     benchmark snapshots -> evaluation -> human review
-```
-
-- Evidence stores paper ID, page, URL, modality, excerpt, section heuristic and bounding boxes where available. Images retain local asset paths; image assets are not necessarily complete rendered figures.
-- Filtering searches the full small index before selecting top-k. Equal text on different pages or papers remains separately citable.
-- Citations must match **ID, paper and page**. Missing/invalid citations or uncited sentences cause an abstention; the raw response remains available for auditing.
-- Low retrieval scores or no evidence cause abstention. Similarity thresholds are heuristics, not proof of sufficient evidence.
-- Document content is serialized as untrusted JSON; generation has no execution tools. Injection regression tests cover deterministic providers and output guards. They do not establish immunity for every remote LLM.
-- Retrieval order, seeds, model/version, prompts, decoding settings, source/index/question hashes, hardware, token usage and end-to-end retrieval/generation latency are saved. API tokens are measured; offline counts are estimates.
-
-Example **excerpt from an actual offline answer**, shortened here:
-
-> Extracted evidence: “We proposed a new model architecture called Mo- bileNets based on depthwise separable convolutions. …” [P01, p.8, ev-P01-p8-t3-c0].
-
-The offline generator quotes source text; it does not perform cross-paper reasoning or certify that the quote answers the entire question.
-
-## Evaluation and ablations
-
-Modes:
-
-| Mode | Input |
-|---|---|
-| `closed-book` | No retrieval. Offline generators abstain because they have no learned knowledge. |
-| `text-rag` | Body text and captions; no structured table input. |
-| `table-rag` | Body text, captions and structured tables. |
-| `caption-rag` | Alias baseline with text and captions; no image inference. |
-| `vlm-rag` | Rejected explicitly: end-to-end image evaluation is not implemented. |
-
-```bash
 python scripts/run_baselines.py --questions data/questions.jsonl --out results/ablation-run --ablations
-# Produces k3, k5, k10 and no-captions runs.
-python scripts/evaluate.py --run results/ablation-run/k3 --report reports/k3.md
 python scripts/audit_data.py --out reports/data-audit
-```
 
-Text/table runs at each k use identical questions and generator settings. Explicit caption blocks are separated from body text for caption ablations; imperfect PDF layout parsing can still leave caption fragments inside mixed blocks. No reranker is implemented.
-
-`evaluation_metrics.json` reports numerator/denominator, per-question/category/modality/split results, latency p50/p95, tokens and abstention precision/recall. Undefined ratios are `null`, not 100%. API cost is `null` unless independently measured; token counts do not imply a dollar cost.
-
-**Structural citation precision** checks original raw citations, including rejected ones. **Citation coverage** counts delivered sentences with citations, not semantic entailment. Evidence recall uses exact evidence IDs (or their chunks), falling back to paper/page only when a gold ID was not supplied. Page-level recall is coarse. It is not an answer-accuracy metric.
-
-For human scoring:
-
-1. Give `review_template.jsonl` to reviewers; keep `blind_key.json` separate. `review_id` order obscures mode labels but answer style can still reveal the generator.
-2. Review gold facts, source excerpts and each cited claim. Fill correctness (0/1), semantic_citation_support (0/1 or null), annotator and rationale.
-3. Convert filled reviews to judgments with `scripts/import_reviews.py` and evaluate with `--judgments`.
-
-```bash
-python scripts/import_reviews.py --reviews results/my-run/review_template.jsonl --key results/my-run/blind_key.json --out results/my-run/judgments.jsonl
-researchpilot evaluate --run results/my-run --judgments results/my-run/judgments.jsonl
-```
-
-There is currently **no untouched held-out set**. All legacy questions were available during development. `--split dev|held-out` supports future prospectively annotated questions; relabeling these existing questions would not make them unseen.
-
-## Optional API generation
-
-Install `python -m pip install '.[api]'`, put `OPENAI_API_KEY` in `.env`, copy the default config to a new YAML and set `generate.llm_provider: openai` and `generate.llm_model` to your chosen supported model. Run with `researchpilot --config PATH ...`. There is no automatic model fallback. Existing API/VLM provider adapters remain optional; real API inference and actual image reasoning were not exercised in the offline validation.
-
-A sentence-transformers embedding provider is also available through `.[semantic]`. Changing the embedding provider/model/dimension requires a new index. Record and pin the downloaded model revision and optional dependency versions before drawing research conclusions.
-
-## Data and limitations
-
-See [data documentation](data/README.md) for corrected source metadata and [failure analysis](reports/failure_analysis.md). PDF extraction can miss or split tables, merge columns, omit vector figures and misidentify captions. OCR is not implemented. The benchmark's original authorship/verification is undocumented; source corrections made by AI are not human annotations.
-
-The larger study still needs 10–20 permissively licensed papers, 30–50 human-authored/verified questions, a genuinely held-out subset, completed extraction reviews, blind correctness/support judgments and experiments with a real generator. The shipped offline runs demonstrate software behavior and lexical retrieval only.
-
-## Development
-
-```bash
 ruff check src scripts tests
-ruff format --check src scripts tests
 pytest -q
 ```
 
-CI runs the same offline checks on Python 3.11. Tests use synthetic PDFs and never require API credentials. Source code is declared MIT in project metadata; third-party papers retain their own licenses.
+Benchmark không ghi đè predictions đã có; dùng thư mục output mới cho mỗi lần chạy. Khi dùng index khác, truyền `--index-dir` và giữ cấu hình embedding khớp với index. Test offline không cần API key; muốn kiểm tra API thật cần cấu hình riêng.
 
-### Key Groq dự phòng và câu hỏi tổng hợp
+Các chỉ số trích dẫn cấu trúc, coverage và evidence recall đo những khía cạnh khác nhau; không được gọi chung là độ chính xác câu trả lời. Chấm tính đúng và mức hỗ trợ ngữ nghĩa cần con người đọc nguồn. Những câu hỏi cũ đã được dùng trong quá trình phát triển, chưa tạo thành tập held-out độc lập.
 
-Server hỗ trợ `GROQ_API_KEYS` trong `.env.local`: danh sách key phân cách bằng dấu phẩy.
-`GROQ_API_KEY` vẫn là key chính. Chỉ khi gọi API bị HTTP 429, server thử key dự phòng,
-mỗi key tối đa một lần trong một lượt sinh; key bị giới hạn được tạm nghỉ theo
-`Retry-After` (mặc định 60 giây). Các key không được gửi xuống giao diện hoặc ghi log.
-Nếu mọi key bị giới hạn, ứng dụng báo lỗi quota; nếu các key chung một hạn mức,
-chuyển key không làm tăng hạn mức đó. Lỗi xác thực/model/mạng không tự đổi key.
-Key do người dùng nhập trực tiếp trong tab vẫn có ưu tiên và không dùng pool server.
+Đọc thêm:
 
-Câu hỏi tiếng Việt được diễn giải thành truy vấn tìm nguồn, có tên các paper đã chọn.
-Câu hỏi bài học/tổng quan lấy thêm trang giới thiệu của mỗi paper. Model chọn mã
-đoạn gốc thay vì chép lại trích dẫn, giảm lỗi trích dẫn sai định dạng. Câu trả lời có
-thể trả phần đã xác định kèm mục “Phần chưa xác định từ nguồn”. Không có cam kết
-mọi câu hỏi đều trả lời được: thông tin không có trong tài liệu không được bịa ra.
+- [Dữ liệu và nguồn paper](data/README.md)
+- [Tình trạng yêu cầu nghiên cứu](reports/requirements_status.md)
+- [Báo cáo thí nghiệm nền](reports/experiment_report.md)
+- [Phân tích lỗi](reports/failure_analysis.md)
+- [Kiểm thử import, Gemini và evidence](reports/ui-import-gemini-evidence-20260924.md)
 
-### Khi trình duyệt báo “fetch failed”
+Các báo cáo ghi nhận trạng thái tại thời điểm chạy, không phải cam kết cho mọi phiên bản hoặc mọi nhà cung cấp API.
 
-Lỗi này có thể do server localhost đã dừng, chưa phải do API key. Khởi động độc lập
-với terminal/tác vụ bằng:
+## Xử lý lỗi thường gặp
 
-```bash
-.venv311/bin/python scripts/start_web.py
-```
+| Hiện tượng | Cách kiểm tra |
+| --- | --- |
+| Không mở được web / `fetch failed` | Chạy `python scripts/start_web.py`; xem `tmp/web-server.log` nếu server không lên |
+| Không tìm thấy corpus/index | Chạy bước tạo thư viện ban đầu từ thư mục repository |
+| Key không hợp lệ / model không truy cập được | Kiểm tra key, nhà cung cấp và model ID trong **Kết nối model** |
+| HTTP 429 / giới hạn API | Kiểm tra quota của tài khoản; chờ hoặc đổi nhà cung cấp. Không mặc định coi mọi 429 là hết tiền |
+| Model trả phản hồi rỗng | Thử lại hoặc chọn model khác; nút kiểm tra kết nối không kiểm tra sinh nội dung |
+| Chưa đủ bằng chứng | Kiểm tra đã chọn đúng paper, mở đoạn nguồn, hoặc hỏi rõ hơn. Không có cơ chế bảo đảm trả lời mọi câu hỏi |
+| Giao diện vẫn giống bản cũ | Tải lại trang rồi gửi lại câu hỏi; lưu ghi chú cần thiết trước khi tải lại |
 
-Lệnh không tạo thêm server nếu ứng dụng đã chạy. Log ở `tmp/web-server.log`;
-PID ở `tmp/web-server.pid`. Không cần gửi key vào lệnh. Ứng dụng phân biệt lỗi
-mất kết nối local, key không hợp lệ và giới hạn API; không mặc định coi HTTP 429 là hết tiền.
+## Giới hạn hiện tại
+
+- Server chỉ phục vụ `127.0.0.1`, chưa có xác thực hay thiết kế triển khai công khai cho nhiều người dùng.
+- Trích xuất PDF có thể lẫn cột, ngắt chữ hoặc đọc sai bảng; chưa có OCR và chưa hoàn thiện suy luận trực tiếp trên hình.
+- `caption-rag` dùng văn bản/caption, không phải phân tích hình bằng model thị giác. Luồng đánh giá `vlm-rag` chưa được triển khai hoàn chỉnh.
+- Offline chỉ trích nguồn; không thực hiện tổng hợp và so sánh như LLM.
+- Việc chọn bằng chứng và giải thích của LLM có thể sai. Bộ dữ liệu hiện tại chưa đủ cho kết luận nghiên cứu về chất lượng tổng quát.
+
+Mã nguồn khai báo giấy phép **MIT** trong metadata dự án. Các paper và tài nguyên bên thứ ba giữ giấy phép riêng.
