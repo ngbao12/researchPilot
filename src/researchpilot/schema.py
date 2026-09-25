@@ -121,6 +121,9 @@ class Answer(BaseModel):
     retrieved_evidence: list[RetrievalResult] = Field(default_factory=list)
     evidence_terms: dict[str, list[str]] = Field(default_factory=dict)
     support_quotes: dict[str, list[str]] = Field(default_factory=dict)
+    evidence_support: dict[str, list[dict[str, str]]] = Field(default_factory=dict)
+    retrieval_method: str = "lexical"
+    limitations: list[str] = Field(default_factory=list)
     prompt: str = ""
     system_prompt: str = ""
     usage_kind: str = "measured"

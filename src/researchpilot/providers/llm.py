@@ -21,6 +21,10 @@ API_ENDPOINTS = {
 }
 
 
+class ProviderResponseError(RuntimeError):
+    """An upstream response cannot be used as an answer."""
+
+
 @dataclass
 class LLMResponse:
     """Structured LLM response with metadata."""
@@ -115,7 +119,7 @@ class OpenAIGenerator(LLMProvider):
             "max_tokens": max_tokens,
         }
         if self._provider == "groq" and self._model.startswith("openai/gpt-oss-"):
-            kwargs["reasoning_effort"] = "low"
+            kwargs["reasoning_effort"] = getattr(self, "reasoning_effort", "low")
             kwargs["extra_body"] = {"include_reasoning": False}
         if self._provider == "gemini":
             kwargs["reasoning_effort"] = "low"
@@ -127,25 +131,33 @@ class OpenAIGenerator(LLMProvider):
         response = self._client.chat.completions.create(**kwargs)
         elapsed_ms = (time.perf_counter() - start) * 1000
 
+        if not response.choices:
+            raise ProviderResponseError("empty_choices")
         choice = response.choices[0]
+        if not choice.message or not isinstance(choice.message.content, str) or not choice.message.content.strip():
+            raise ProviderResponseError("empty_content")
         usage = response.usage
+        def token_count(name):
+            value = getattr(usage, name, 0) if usage else 0
+            return value if isinstance(value, int) and value >= 0 else 0
 
-        self._total_tokens += usage.total_tokens if usage else 0
+
+        self._total_tokens += token_count("total_tokens")
 
         logger.info(
             "LLM response: model=%s, tokens=%d, latency=%.0fms",
             self._model,
-            usage.total_tokens if usage else 0,
+            token_count("total_tokens"),
             elapsed_ms,
         )
 
         return LLMResponse(
             text=choice.message.content or "",
             model_id=f"{self._provider}/{self._model}",
-            model_version=response.model,
-            prompt_tokens=usage.prompt_tokens if usage else 0,
-            completion_tokens=usage.completion_tokens if usage else 0,
-            total_tokens=usage.total_tokens if usage else 0,
+            model_version=response.model or self._model,
+            prompt_tokens=token_count("prompt_tokens"),
+            completion_tokens=token_count("completion_tokens"),
+            total_tokens=token_count("total_tokens"),
             latency_ms=elapsed_ms,
             temperature=temperature,
             seed=seed,

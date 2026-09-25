@@ -10,6 +10,7 @@ import mimetypes
 import os
 import re
 import threading
+import traceback
 from collections import Counter
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -30,6 +31,7 @@ from researchpilot.library import (
 from researchpilot.quality import answer_workspace
 from researchpilot.compare import compare_papers
 from researchpilot.pipeline import ask_question, load_index
+from researchpilot.providers.groq_pool import GroqKeyPool, GroqPoolGenerator
 from researchpilot.providers.llm import API_ENDPOINTS, ExtractiveGenerator, OpenAIGenerator
 from researchpilot.schema import AnswerMode, CorpusData
 
@@ -95,6 +97,12 @@ class Workspace:
         self.default_groq_key = SecretStr(
             os.environ.get("GROQ_API_KEY") or local.get("GROQ_API_KEY") or ""
         )
+        extra_keys = os.environ.get("GROQ_API_KEYS") or local.get("GROQ_API_KEYS") or ""
+        self.groq_pool = GroqKeyPool(
+            [self.default_groq_key.get_secret_value(), *extra_keys.split(",")]
+        )
+        if not self.default_groq_key.get_secret_value() and self.groq_pool.keys:
+            self.default_groq_key = self.groq_pool.keys[0]
         self.default_groq_model = (
             os.environ.get("GROQ_MODEL") or local.get("GROQ_MODEL") or "openai/gpt-oss-120b"
         )
@@ -233,14 +241,33 @@ class Workspace:
         config = copy.deepcopy(self.config)
         if provider == "groq" and model.startswith("openai/gpt-oss-"):
             config.setdefault("generate", {})["max_tokens"] = 2048
-        llm = (
-            OpenAIGenerator(model=model, api_key=key, provider=provider, language=request.language)
-            if provider != "offline"
-            else ExtractiveGenerator()
+        if provider == "offline":
+            llm = ExtractiveGenerator()
+        elif (
+            provider == "groq"
+            and not request.api_key.get_secret_value().strip()
+            and getattr(self, "groq_pool", None)
+        ):
+            llm = GroqPoolGenerator(self.groq_pool, model, request.language)
+        else:
+            llm = OpenAIGenerator(
+                model=model, api_key=key, provider=provider, language=request.language
+            )
+        # Groq free-tier keys share a single 8 000 token-per-minute bucket;
+        # tell answer_workspace so it can shrink context to avoid 429s.
+        _groq_pool_active = (
+            provider == "groq"
+            and not request.api_key.get_secret_value().strip()
+            and getattr(self, "groq_pool", None)
         )
         try:
             if provider != "offline" and request.mode == "table-rag":
-                answer = answer_workspace(self, request, llm)
+                answer = answer_workspace(
+                    self,
+                    request,
+                    llm,
+                    token_budget=8000 if _groq_pool_active else 0,
+                )
                 flags = []
             elif request.task == "compare":
                 result = compare_papers(
@@ -283,15 +310,35 @@ class Workspace:
 def safe_error(exc: Exception):
     """Never reflect upstream errors containing credentials or request bodies."""
     name = type(exc).__name__
+    if name == "ProviderResponseError":
+        return 502, "Model trả về phản hồi rỗng hoặc không thể sử dụng. Hãy thử lại hoặc chọn model khác trong Kết nối model."
+    if name in {"InternalServerError", "APIStatusError", "APIResponseValidationError"}:
+        return 502, "Nhà cung cấp API đang lỗi hoặc trả về dữ liệu không hợp lệ. Hãy thử lại sau hoặc chọn model khác."
     if name == "AuthenticationError":
         return 401, "API key không hợp lệ hoặc đã hết hiệu lực. Kiểm tra lại trong Kết nối model."
-    if name == "RateLimitError":
-        return 429, "Tài khoản API đã chạm giới hạn hoặc hết hạn mức. Kiểm tra billing rồi thử lại."
+    if name in {"RateLimitError", "GroqQuotaExhausted"}:
+        msg = str(exc)
+        if "tokens per day" in msg.casefold() or "per day" in msg.casefold():
+            return (
+                429,
+                "Hết hạn mức token hằng ngày (200K tokens/ngày cho Groq free). Hạn mức sẽ reset lúc nửa đêm UTC. Nâng cấp tài khoản Groq hoặc dùng API key của nhà cung cấp khác.",
+            )
+        if "tokens per minute" in msg.casefold():
+            return 429, "Đang vượt giới hạn token/phút. Vui lòng đợi 1-2 phút rồi thử lại."
+        return 429, "Nhà cung cấp API đang giới hạn yêu cầu. Hãy chờ rồi thử lại; lỗi này không nhất thiết là hết tiền."
     if name in {"APIConnectionError", "APITimeoutError"}:
         return 502, "Chưa kết nối được nhà cung cấp API. Kiểm tra mạng và thử lại."
     if name in {"NotFoundError", "PermissionDeniedError"}:
         return 400, "Model không tồn tại hoặc key chưa có quyền truy cập model này."
     if name == "BadRequestError":
+        body = getattr(exc, "body", None)
+        error = body.get("error", body) if isinstance(body, dict) else {}
+        message = str(error.get("message", "")).lower() if isinstance(error, dict) else ""
+        if "valid api key" in message or "api key not valid" in message:
+            return (
+                401,
+                "API key không hợp lệ hoặc đã hết hiệu lực. Kiểm tra lại trong Kết nối model.",
+            )
         return (
             400,
             "Model không hỗ trợ cấu hình sinh hiện tại. Thử model tương thích Chat Completions như gpt-4o-mini.",
@@ -458,6 +505,12 @@ def make_handler(workspace: Workspace):
             except InputError as exc:
                 self.send_body(400, {"error": str(exc)})
             except Exception as exc:
+                # Log locations and exception type only: upstream messages may contain keys.
+                frames = traceback.extract_tb(exc.__traceback__)
+                logging.getLogger(__name__).error(
+                    "Request failed: %s; locations=%s", type(exc).__name__,
+                    " > ".join(f"{Path(f.filename).name}:{f.lineno}:{f.name}" for f in frames),
+                )
                 status, message = safe_error(exc)
                 self.send_body(status, {"error": message})
             finally:

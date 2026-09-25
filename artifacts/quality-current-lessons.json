@@ -1,0 +1,216 @@
+{
+  "answer": {
+    "answer": "ResNet giới thiệu khái niệm học dư (residual learning) để chuyển đổi các lớp thành các hàm dư F(x)=H(x)−x, giúp các mạng rất sâu (đến 152 lớp) dễ tối ưu hơn và đạt độ lỗi thấp hơn trên ImageNet và CIFAR‑10 [U1e0651b6810e, p.1, page-U1e0651b6810e-1] [U1e0651b6810e, p.3, page-U1e0651b6810e-3]\n\nViệc sử dụng kết nối dư (residual connection) trong ResNet cho phép các lớp học gần như các ánh xạ đồng nhất, giảm vấn đề suy giảm độ sâu và cải thiện khả năng tổng quát trên các nhiệm vụ như phát hiện đối tượng COCO [U1e0651b6810e, p.1, page-U1e0651b6810e-1] [U1e0651b6810e, p.3, page-U1e0651b6810e-3]\n\nTransformer đề xuất kiến trúc chỉ dựa trên cơ chế attention (self‑attention đa đầu) mà không có bất kỳ lớp hồi quy hay tích chập nào, nhờ đó mô hình có thể được tính toán song song mạnh mẽ và giảm thời gian huấn luyện đáng kể [Ubdfaa68d8984, p.1, page-Ubdfaa68d8984-1] [Ubdfaa68d8984, p.3, page-Ubdfaa68d8984-3]\n\nTrong Transformer, mỗi khối encoder và decoder gồm N=6 lớp đồng nhất, mỗi lớp có hai (encoder) hoặc ba (decoder) sub‑layer, và tất cả các sub‑layer đều được bao quanh bởi kết nối dư và chuẩn hoá lớp (layer‑norm) [Ubdfaa68d8984, p.3, page-Ubdfaa68d8984-3]\n\nTransformer đạt BLEU 28.4 trên WMT 2014 English‑German và BLEU 41.8 trên English‑French chỉ sau 3.5 ngày huấn luyện trên 8 GPU, chứng tỏ hiệu suất chất lượng và tốc độ vượt trội so với các mô hình dựa trên RNN/CNN truyền thống [Ubdfaa68d8984, p.1, page-Ubdfaa68d8984-1]",
+    "abstained": false,
+    "citations": [
+      {
+        "paper_id": "U1e0651b6810e",
+        "page": 1,
+        "evidence_id": "page-U1e0651b6810e-1"
+      },
+      {
+        "paper_id": "U1e0651b6810e",
+        "page": 3,
+        "evidence_id": "page-U1e0651b6810e-3"
+      },
+      {
+        "paper_id": "Ubdfaa68d8984",
+        "page": 1,
+        "evidence_id": "page-Ubdfaa68d8984-1"
+      },
+      {
+        "paper_id": "Ubdfaa68d8984",
+        "page": 3,
+        "evidence_id": "page-Ubdfaa68d8984-3"
+      }
+    ],
+    "retrieved": [
+      "page-U1e0651b6810e-1",
+      "page-U1e0651b6810e-7",
+      "page-U1e0651b6810e-3",
+      "page-Ubdfaa68d8984-1",
+      "page-Ubdfaa68d8984-11",
+      "page-Ubdfaa68d8984-3"
+    ],
+    "mode": "table-rag",
+    "model_id": "groq/openai/gpt-oss-120b",
+    "model_version": "openai/gpt-oss-120b",
+    "prompt_template": "",
+    "temperature": 0.0,
+    "seed": null,
+    "latency_ms": 4758.889333999832,
+    "usage": {
+      "total_tokens": 4776
+    },
+    "warnings": [],
+    "retrieved_evidence": [
+      {
+        "evidence": {
+          "evidence_id": "page-U1e0651b6810e-1",
+          "paper_id": "U1e0651b6810e",
+          "source_url": "https://arxiv.org/pdf/1512.03385v1",
+          "page": 1,
+          "section": "",
+          "modality": "text",
+          "text": "Deep Residual Learning for Image Recognition\nKaiming He\nXiangyu Zhang\nShaoqing Ren\nJian Sun\nMicrosoft Research\n{kahe, v-xiangz, v-shren, jiansun}@microsoft.com\nAbstract\nDeeper neural networks are more difﬁcult to train. We\npresent a residual learning framework to ease the training\nof networks that are substantially deeper than those used\npreviously. We explicitly reformulate the layers as learn-\ning residual functions with reference to the layer inputs, in-\nstead of learning unreferenced functions. We provide com-\nprehensive empirical evidence showing that these residual\nnetworks are easier to optimize, and can gain accuracy from\nconsiderably increased depth. On the ImageNet dataset we\nevaluate residual nets with a depth of up to 152 layers—8×\ndeeper than VGG nets [41] but still having lower complex-\nity. An ensemble of these residual nets achieves 3.57% error\non the ImageNet test set. This result won the 1st place on the\nILSVRC 2015 classiﬁcation task. We also present analysis\non CIFAR-10 with 100 and 1000 layers.\nThe depth of representations is of central importance\nfor many visual recognition tasks. Solely due to our ex-\ntremely deep representations, we obtain a 28% relative im-\nprovement on the COCO object detection dataset. Deep\nresidual nets are foundations of our submissions to ILSVRC\n& COCO 2015 competitions1, where we also won the 1st\nplaces on the tasks of ImageNet detection, ImageNet local-\nization, COCO detection, and COCO segmentation.\n1. Introduction\nDeep convolutional neural networks [22, 21] have led\nto a series of breakthroughs for image classiﬁcation [21,\n50, 40]. Deep networks naturally integrate low/mid/high-\nlevel features [50] and classiﬁers in an end-to-end multi-\nlayer fashion, and the “levels” of features can be enriched\nby the number of stacked",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 0.0,
+        "rank": 1
+      },
+      {
+        "evidence": {
+          "evidence_id": "page-U1e0651b6810e-7",
+          "paper_id": "U1e0651b6810e",
+          "source_url": "https://arxiv.org/pdf/1512.03385v1",
+          "page": 7,
+          "section": "",
+          "modality": "text",
+          "text": "layers\n# params\nFitNet [35]\n19\n2.5M\n8.39\nHighway [42, 43]\n19\n2.3M\n7.54 (7.72±0.16)\nHighway [42, 43]\n32\n1.25M\n8.80\nResNet\n20\n0.27M\n8.75\nResNet\n32\n0.46M\n7.51\nResNet\n44\n0.66M\n7.17\nResNet\n56\n0.85M\n6.97\nResNet\n110\n1.7M\n6.43 (6.61±0.16)\nResNet\n1202\n19.4M\n7.93\nTable 6. Classiﬁcation error on the CIFAR-10 test set. All meth-\nods are with data augmentation. For ResNet-110, we run it 5 times\nand show “best (mean±std)” as in [43].\nso our residual models have exactly the same depth, width,\nand number of parameters as the plain counterparts.\nWe use a weight decay of 0.0001 and momentum of 0.9,\nand adopt the weight initialization in [13] and BN [16] but\nwith no dropout. These models are trained with a mini-\nbatch size of 128 on two GPUs. We start with a learning\nrate of 0.1, divide it by 10 at 32k and 48k iterations, and\nterminate training at 64k iterations, which is determined on\na 45k/5k train/val split. We follow the simple data augmen-\ntation in [24] for training: 4 pixels are padded on each side,\nand a 32×32 crop is randomly sampled from the padded\nimage or its horizontal ﬂip. For testing, we only evaluate\nthe single view of the original 32×32 image.\nWe compare n = {3, 5, 7, 9}, leading to 20, 32, 44, and\n56-layer networks. Fig. 6 (left) shows the behaviors of the\nplain nets. The deep plain nets suffer from increased depth,\nand exhibit higher training error when going deeper. This\nphenomenon is similar to that on ImageNet (Fig. 4, left) and\non MNIST (see [42]), suggesting that such an optimization\ndifﬁculty is a fundamental problem.\nFig. 6 (middle) shows the behaviors of ResNets. Also\nsimilar to the ImageNet cases (Fig. 4, right), our ResNets\nmanage to overcome the optimization difﬁculty and demon-\nstrate accuracy gains when the depth increases.\nWe further explore n = 18 that le",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 7.39656657028401,
+        "rank": 2
+      },
+      {
+        "evidence": {
+          "evidence_id": "page-U1e0651b6810e-3",
+          "paper_id": "U1e0651b6810e",
+          "source_url": "https://arxiv.org/pdf/1512.03385v1",
+          "page": 3,
+          "section": "",
+          "modality": "text",
+          "text": "way networks have not demonstrated accuracy gains with\nextremely increased depth (e.g., over 100 layers).\n3. Deep Residual Learning\n3.1. Residual Learning\nLet us consider H(x) as an underlying mapping to be\nﬁt by a few stacked layers (not necessarily the entire net),\nwith x denoting the inputs to the ﬁrst of these layers. If one\nhypothesizes that multiple nonlinear layers can asymptoti-\ncally approximate complicated functions2, then it is equiv-\nalent to hypothesize that they can asymptotically approxi-\nmate the residual functions, i.e., H(x) −x (assuming that\nthe input and output are of the same dimensions).\nSo\nrather than expect stacked layers to approximate H(x), we\nexplicitly let these layers approximate a residual function\nF(x) := H(x) −x. The original function thus becomes\nF(x)+x. Although both forms should be able to asymptot-\nically approximate the desired functions (as hypothesized),\nthe ease of learning might be different.\nThis reformulation is motivated by the counterintuitive\nphenomena about the degradation problem (Fig. 1, left). As\nwe discussed in the introduction, if the added layers can\nbe constructed as identity mappings, a deeper model should\nhave training error no greater than its shallower counter-\npart.\nThe degradation problem suggests that the solvers\nmight have difﬁculties in approximating identity mappings\nby multiple nonlinear layers. With the residual learning re-\nformulation, if identity mappings are optimal, the solvers\nmay simply drive the weights of the multiple nonlinear lay-\ners toward zero to approach identity mappings.\nIn real cases, it is unlikely that identity mappings are op-\ntimal, but our reformulation may help to precondition the\nproblem. If the optimal function is closer to an identity\nmapping than to a zero mapping, it should be",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 5.516316833575461,
+        "rank": 3
+      },
+      {
+        "evidence": {
+          "evidence_id": "page-Ubdfaa68d8984-1",
+          "paper_id": "Ubdfaa68d8984",
+          "source_url": "local-upload",
+          "page": 1,
+          "section": "",
+          "modality": "text",
+          "text": "Provided proper attribution is provided, Google hereby grants permission to\nreproduce the tables and figures in this paper solely for use in journalistic or\nscholarly works.\nAttention Is All You Need\nAshish Vaswani∗\nGoogle Brain\navaswani@google.com\nNoam Shazeer∗\nGoogle Brain\nnoam@google.com\nNiki Parmar∗\nGoogle Research\nnikip@google.com\nJakob Uszkoreit∗\nGoogle Research\nusz@google.com\nLlion Jones∗\nGoogle Research\nllion@google.com\nAidan N. Gomez∗†\nUniversity of Toronto\naidan@cs.toronto.edu\nŁukasz Kaiser∗\nGoogle Brain\nlukaszkaiser@google.com\nIllia Polosukhin∗‡\nillia.polosukhin@gmail.com\nAbstract\nThe dominant sequence transduction models are based on complex recurrent or\nconvolutional neural networks that include an encoder and a decoder. The best\nperforming models also connect the encoder and decoder through an attention\nmechanism. We propose a new simple network architecture, the Transformer,\nbased solely on attention mechanisms, dispensing with recurrence and convolutions\nentirely. Experiments on two machine translation tasks show these models to\nbe superior in quality while being more parallelizable and requiring significantly\nless time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-\nto-German translation task, improving over the existing best results, including\nensembles, by over 2 BLEU. On the WMT 2014 English-to-French translation task,\nour model establishes a new single-model state-of-the-art BLEU score of 41.8 after\ntraining for 3.5 days on eight GPUs, a small fraction of the training costs of the\nbest models from the literature. We show that the Transformer generalizes well to\nother tasks by applying it successfully to English constituency parsing both with\nlarge and limited training data.\n∗Equal contribution. Listing order is random. Jakob proposed\n[...]\n while at Google Research.\n31st Conference on Neural Information Processing Systems (NIPS 2017), Long Beach, CA, USA.\narXiv:1706.03762v7  [cs.CL]  2 Aug 2023",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 0.0,
+        "rank": 4
+      },
+      {
+        "evidence": {
+          "evidence_id": "page-Ubdfaa68d8984-11",
+          "paper_id": "Ubdfaa68d8984",
+          "source_url": "local-upload",
+          "page": 11,
+          "section": "",
+          "modality": "text",
+          "text": "works.\narXiv preprint\narXiv:1308.0850, 2013.\n[11] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for im-\nage recognition. In Proceedings of the IEEE Conference on Computer Vision and Pattern\nRecognition, pages 770–778, 2016.\n[12] Sepp Hochreiter, Yoshua Bengio, Paolo Frasconi, and Jürgen Schmidhuber. Gradient flow in\nrecurrent nets: the difficulty of learning long-term dependencies, 2001.\n[13] Sepp Hochreiter and Jürgen Schmidhuber. Long short-term memory. Neural computation,\n9(8):1735–1780, 1997.\n[14] Zhongqiang Huang and Mary Harper. Self-training PCFG grammars with latent annotations\nacross languages. In Proceedings of the 2009 Conference on Empirical Methods in Natural\nLanguage Processing, pages 832–841. ACL, August 2009.\n[15] Rafal Jozefowicz, Oriol Vinyals, Mike Schuster, Noam Shazeer, and Yonghui Wu. Exploring\nthe limits of language modeling. arXiv preprint arXiv:1602.02410, 2016.\n[16] Łukasz Kaiser and Samy Bengio. Can active memory replace attention? In Advances in Neural\nInformation Processing Systems, (NIPS), 2016.\n[17] Łukasz Kaiser and Ilya Sutskever. Neural GPUs learn algorithms. In International Conference\non Learning Representations (ICLR), 2016.\n[18] Nal Kalchbrenner, Lasse Espeholt, Karen Simonyan, Aaron van den Oord, Alex Graves, and Ko-\nray Kavukcuoglu. Neural machine translation in linear time. arXiv preprint arXiv:1610.10099v2,\n2017.\n[19] Yoon Kim, Carl Denton, Luong Hoang, and Alexander M. Rush. Structured attention networks.\nIn International Conference on Learning Representations, 2017.\n[20] Diederik Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In ICLR, 2015.\n[21] Oleksii Kuchaiev and Boris Ginsburg. Factorization tricks for LSTM networks. arXiv preprint\narXiv:1703.10722, 2017.\n[22] Zhouhan Lin, ",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 10.101861482636666,
+        "rank": 5
+      },
+      {
+        "evidence": {
+          "evidence_id": "page-Ubdfaa68d8984-3",
+          "paper_id": "Ubdfaa68d8984",
+          "source_url": "local-upload",
+          "page": 3,
+          "section": "",
+          "modality": "text",
+          "text": "Figure 1: The Transformer - model architecture.\nThe Transformer follows this overall architecture using stacked self-attention and point-wise, fully\nconnected layers for both the encoder and decoder, shown in the left and right halves of Figure 1,\nrespectively.\n3.1\nEncoder and Decoder Stacks\nEncoder:\nThe encoder is composed of a stack of N = 6 identical layers. Each layer has two\nsub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-\nwise fully connected feed-forward network. We employ a residual connection [11] around each of\nthe two sub-layers, followed by layer normalization [1]. That is, the output of each sub-layer is\nLayerNorm(x + Sublayer(x)), where Sublayer(x) is the function implemented by the sub-layer\nitself. To facilitate these residual connections, all sub-layers in the model, as well as the embedding\nlayers, produce outputs of dimension dmodel = 512.\nDecoder:\nThe decoder is also composed of a stack of N = 6 identical layers. In addition to the two\nsub-layers in each encoder layer, the decoder inserts a third sub-layer, which performs multi-head\nattention over the output of the encoder stack. Similar to the encoder, we employ residual connections\naround each of the sub-layers, followed by layer normalization. We also modify the self-attention\nsub-layer in the decoder stack to prevent positions from attending to subsequent positions. This\nmasking, combined with fact that the output embeddings are offset by one position, ensures that the\npredictions for position i can depend only on the known outputs at positions less than i.\n3.2\nAttention\nAn attention function can be described as mapping a query and a set of key-value pairs to an output,\nwhere the query, keys, values, and output are all vectors. The output is computed as a weighted sum\n3",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 6.39811797090585,
+        "rank": 6
+      }
+    ],
+    "evidence_terms": {
+      "page-U1e0651b6810e-1": [
+        "deep",
+        "image",
+        "learning",
+        "recognition",
+        "residual"
+      ],
+      "page-U1e0651b6810e-7": [
+        "all",
+        "compare",
+        "deep",
+        "image",
+        "learning",
+        "residual"
+      ],
+      "page-U1e0651b6810e-3": [
+        "approach",
+        "deep",
+        "learning",
+        "residual"
+      ],
+      "page-Ubdfaa68d8984-1": [
+        "all",
+        "architecture",
+        "attention",
+        "contribution",
+        "need",
+        "you"
+      ],
+      "page-Ubdfaa68d8984-11": [
+        "attention",
+        "deep",
+        "learning",
+        "method",
+        "recognition",
+        "residual"
+      ],
+      "page-Ubdfaa68d8984-3": [
+        "all",
+        "architecture",
+        "attention",
+        "key",
+        "residual"
+      ]
+    },
+    "support_quotes": {
+      "page-U1e0651b6810e-1": [
+        "Deep Residual Learning for Image Recognition\nKaiming He\nXiangyu Zhang\nShaoqing Ren\nJian Sun\nMicrosoft Research\n{kahe, v-xiangz, v-shren, jiansun}@microsoft.com\nAbstract\nDeeper neural networks are more difﬁcult to train. We\npresent a residual learning framework to ease the training\nof networks that are substantially deeper than those used\npreviously. We explicitly reformulate the layers as learn-\ning residual functions with reference to the layer inputs, in-\nstead of learning unreferenced functions. We provide com-\nprehensive empirical evidence showing that these residual\nnetworks are easier to optimize, and can gain accuracy from\n",
+        "considerably increased depth. On the ImageNet dataset we\nevaluate residual nets with a depth of up to 152 layers—8×\ndeeper than VGG nets [41] but still having lower complex-\nity. An ensemble of these residual nets achieves 3.57% error\non the ImageNet test set. This result won the 1st place on the\nILSVRC 2015 classiﬁcation task. We also present analysis\non CIFAR-10 with 100 and 1000 layers.\nThe depth of representations is of central importance\nfor many visual recognition tasks. Solely due to our ex-\ntremely deep representations, we obtain a 28% relative im-\nprovement on the COCO object detection dataset. Deep\n"
+      ],
+      "page-U1e0651b6810e-3": [
+        "rather than expect stacked layers to approximate H(x), we\nexplicitly let these layers approximate a residual function\nF(x) := H(x) −x. The original function thus becomes\nF(x)+x. Although both forms should be able to asymptot-\nically approximate the desired functions (as hypothesized),\nthe ease of learning might be different.\nThis reformulation is motivated by the counterintuitive\nphenomena about the degradation problem (Fig. 1, left). As\nwe discussed in the introduction, if the added layers can\nbe constructed as identity mappings, a deeper model should\nhave training error no greater than its shallower counter-\npart.\n",
+        "The degradation problem suggests that the solvers\nmight have difﬁculties in approximating identity mappings\nby multiple nonlinear layers. With the residual learning re-\nformulation, if identity mappings are optimal, the solvers\nmay simply drive the weights of the multiple nonlinear lay-\ners toward zero to approach identity mappings.\nIn real cases, it is unlikely that identity mappings are op-\ntimal, but our reformulation may help to precondition the\nproblem. If the optimal function is closer to an identity\nmapping than to a zero mapping, it should be"
+      ],
+      "page-Ubdfaa68d8984-1": [
+        "The dominant sequence transduction models are based on complex recurrent or\nconvolutional neural networks that include an encoder and a decoder. The best\nperforming models also connect the encoder and decoder through an attention\nmechanism. We propose a new simple network architecture, the Transformer,\nbased solely on attention mechanisms, dispensing with recurrence and convolutions\nentirely. Experiments on two machine translation tasks show these models to\nbe superior in quality while being more parallelizable and requiring significantly\nless time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-\n",
+        "to-German translation task, improving over the existing best results, including\nensembles, by over 2 BLEU. On the WMT 2014 English-to-French translation task,\nour model establishes a new single-model state-of-the-art BLEU score of 41.8 after\ntraining for 3.5 days on eight GPUs, a small fraction of the training costs of the\nbest models from the literature. We show that the Transformer generalizes well to\nother tasks by applying it successfully to English constituency parsing both with\nlarge and limited training data.\n∗Equal contribution. Listing order is random. Jakob proposed\n[...]\n while at Google Research.\n"
+      ],
+      "page-Ubdfaa68d8984-3": [
+        "Figure 1: The Transformer - model architecture.\nThe Transformer follows this overall architecture using stacked self-attention and point-wise, fully\nconnected layers for both the encoder and decoder, shown in the left and right halves of Figure 1,\nrespectively.\n3.1\nEncoder and Decoder Stacks\nEncoder:\nThe encoder is composed of a stack of N = 6 identical layers. Each layer has two\nsub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-\nwise fully connected feed-forward network. We employ a residual connection [11] around each of\n",
+        "the two sub-layers, followed by layer normalization [1]. That is, the output of each sub-layer is\nLayerNorm(x + Sublayer(x)), where Sublayer(x) is the function implemented by the sub-layer\nitself. To facilitate these residual connections, all sub-layers in the model, as well as the embedding\nlayers, produce outputs of dimension dmodel = 512.\nDecoder:\nThe decoder is also composed of a stack of N = 6 identical layers. In addition to the two\nsub-layers in each encoder layer, the decoder inserts a third sub-layer, which performs multi-head\nattention over the output of the encoder stack. Similar to the encoder, we employ residual connections\n"
+      ]
+    },
+    "limitations": [],
+    "usage_kind": "measured",
+    "retrieval_latency_ms": 0.0,
+    "timestamp": "2026-09-24T17:08:31.034855"
+  },
+  "unsupported": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+}

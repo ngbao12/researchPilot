@@ -22,6 +22,7 @@ src/researchpilot.egg-info/requires.txt
 src/researchpilot.egg-info/top_level.txt
 src/researchpilot/providers/__init__.py
 src/researchpilot/providers/embedding.py
+src/researchpilot/providers/groq_pool.py
 src/researchpilot/providers/llm.py
 src/researchpilot/providers/vlm.py
 src/researchpilot/web_assets/app.js
@@ -30,6 +31,7 @@ src/researchpilot/web_assets/index.html
 src/researchpilot/web_assets/style.css
 tests/test_abstention.py
 tests/test_citations.py
+tests/test_groq_pool.py
 tests/test_library_quality.py
 tests/test_provenance.py
 tests/test_regressions.py

@@ -8,11 +8,21 @@ const paperById = id => state.papers.find(p => p.id === id);
 let toastTimer;
 function toast(message) { $('toast').textContent = t(message); $('toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').hidden = true, 4000); }
 async function api(path, body) {
-  const response = await fetch(path, body ? {method: 'POST', headers: {'Content-Type': 'application/json', 'X-ResearchPilot': 'workspace'}, body: JSON.stringify(body)} : {});
-  const data = await response.json();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 180000);
+  let response;
+  try {
+    response = await fetch(path, body ? {method: 'POST', headers: {'Content-Type': 'application/json', 'X-ResearchPilot': 'workspace'}, body: JSON.stringify(body), signal: controller.signal} : {signal: controller.signal});
+  } catch (error) {
+    throw new Error(t(error.name === 'AbortError' ? 'Yêu cầu mất quá nhiều thời gian. Hãy thử lại sau.' : 'Không kết nối được ResearchPilot trên máy. Hãy khởi động lại server rồi thử lại; đây chưa phải lỗi API key.'));
+  } finally { clearTimeout(timer); }
+  let data;
+  try { data = await response.json(); }
+  catch (_) { throw new Error(t('Server trả về dữ liệu không hợp lệ. Hãy tải lại trang và thử lại.')); }
   if (!response.ok) throw new Error(t(data.error || 'Chưa hoàn thành yêu cầu. Vui lòng thử lại.'));
   return data;
 }
+
 function view(name) {
   state.view = name;
   for (const n of document.querySelectorAll('.page-view')) n.hidden = n.id !== name + '-view';
@@ -69,12 +79,13 @@ function renderAnswer(item) {
   state.active = item;
   const answer = item.result.answer;
   $('answer-section').hidden = false; $('export-answer').hidden = false;
-  $('answer-status').textContent = t(answer.abstained ? 'CHƯA ĐỦ BẰNG CHỨNG' : 'GHI CHÚ NGHIÊN CỨU');
+  $('answer-status').textContent = t(answer.abstained ? 'CHƯA ĐỦ BẰNG CHỨNG' : answer.limitations?.length ? 'TRẢ LỜI MỘT PHẦN' : 'GHI CHÚ NGHIÊN CỨU');
   $('answer-question').textContent = item.question;
   $('answer-body').className = 'answer-text'; $('answer-body').replaceChildren();
   const text = answer.abstained ? 'Chưa có đủ bằng chứng để trả lời chắc chắn. Hãy thử câu hỏi cụ thể hơn hoặc chọn thêm tài liệu. Bạn vẫn có thể kiểm tra các đoạn tìm được ở sổ bằng chứng.' : answer.answer;
   if (answer.abstained) $('answer-body').append(document.createTextNode(t(text)));
   else appendCitedAnswer($('answer-body'), text, answer.citations);
+  if (answer.limitations?.length) { const note = el('div', 'partial-answer'); note.append(el('strong', '', 'Phần chưa xác định từ nguồn:')); answer.limitations.forEach(item => note.append(el('p', '', item))); $('answer-body').append(note); }
   $('answer-meta').textContent = t(`${item.provider === 'offline' ? 'Trích đoạn offline' : providerName(item.provider) + ' · ' + item.model} · ${((answer.latency_ms || 0) / 1000).toFixed(1)} giây · ${answer.retrieved_evidence.length} bằng chứng`);
   const warnings = [...(answer.warnings || []), ...(item.result.unsupported || [])];
   $('answer-warnings').hidden = !warnings.length;
@@ -84,24 +95,34 @@ function renderAnswer(item) {
   const evidence = [...answer.retrieved_evidence].sort((a,b) => (citationOrder.get(a.evidence.evidence_id) ?? 1000) - (citationOrder.get(b.evidence.evidence_id) ?? 1000) || a.rank-b.rank);
   $('evidence-count').textContent = String(evidence.length).padStart(2, '0'); $('evidence-empty').hidden = !!evidence.length;
   document.querySelector('.evidence-rail').scrollTop = 0;
-  $('evidence-list').replaceChildren(...evidence.map(r => {
+  const otherSources = el('details', 'source-details'); otherSources.append(el('summary', '', 'Đoạn truy xuất chưa dùng'));
+  const cards = evidence.map(r => {
     const e = r.evidence, used = cited.has(e.evidence_id);
     const terms = (answer.evidence_terms || {})[e.evidence_id] || [];
     const quotes = (answer.support_quotes || {})[e.evidence_id] || [];
     const box = el('article', 'evidence-item' + (used ? ' is-cited' : '')); box.id = 'evidence-' + e.evidence_id;
-    const header = el('div','evidence-card-header'); header.append(el('span','evidence-number',used ? String(citationOrder.get(e.evidence_id)+1).padStart(2,'0') : '—'), el('span','evidence-badge', used ? 'Đã dùng trong câu trả lời' : 'Nguồn liên quan'));
+    const header = el('div','evidence-card-header'); header.append(el('span','evidence-number',used ? String(citationOrder.get(e.evidence_id)+1).padStart(2,'0') : '—'), el('span','evidence-badge', used ? 'Đã dùng trong câu trả lời' : 'Đoạn truy xuất chưa dùng'));
     box.append(header,el('h4','',shortName(paperById(e.paper_id) || {id:e.paper_id,title:e.paper_id})),el('div','evidence-page',t('Trang')+' '+e.page));
     const excerpt = el('blockquote','source-quote');
     const preview = quotes.length ? quotes.join(' … ') : e.text.slice(0,360) + (e.text.length>360 ? '…' : '');
-    appendHighlighted(excerpt, preview, terms); box.append(excerpt);
+    excerpt.textContent = preview; box.append(excerpt);
     const why = el('div','evidence-why'); why.append(el('strong','', 'Vì sao liên quan?'));
-    why.append(el('p','', used && quotes.length ? 'Đoạn trích này đã được đối chiếu với trang gốc và dùng để hỗ trợ câu trả lời.' : used ? 'Câu trả lời có trích dẫn đến nguồn này.' : 'Được tìm thấy khi truy xuất; chưa được dùng để khẳng định câu trả lời.'));
-    if (terms.length) { const row=el('div','keyword-row'); row.append(el('span','', 'Từ khóa khớp')); terms.slice(0,6).forEach(term=>row.append(el('span','keyword',term))); why.append(row); }
+    const supports = (answer.evidence_support || {})[e.evidence_id] || [];
+    if (supports.length) supports.forEach(support => {
+      why.append(el('strong', '', 'Hỗ trợ ý:'), el('p', '', support.claim));
+      if (support.reason) why.append(el('span', '', 'Giải thích của model:'), el('p', '', support.reason));
+    });
+    else why.append(el('p', '', used ? 'Câu trả lời có trích dẫn đến nguồn này.' : 'Được tìm thấy khi truy xuất; chưa được dùng để khẳng định câu trả lời.'));
     box.append(why);
     const full = el('details','source-details'); full.append(el('summary','', 'Xem thêm ngữ cảnh')); const content=el('p'); appendHighlighted(content,e.text,terms); full.append(content); box.append(full);
     const b = el('button','source-open', 'Mở trang PDF ↗'); b.onclick=()=>openSource(e.paper_id,e.page); box.append(b);
+    if (!used) { otherSources.append(box); return null; }
     return box;
-  }));
+  }).filter(Boolean);
+  $('evidence-list').replaceChildren(...cards);
+  if (answer.retrieval_method === 'lexical_fallback') $('evidence-list').prepend(el('p', 'evidence-why', 'Bước chọn theo ngữ nghĩa chưa thành công; đang dùng kết quả truy xuất dự phòng.')); 
+  if (otherSources.children.length > 1) $('evidence-list').append(otherSources);
+  $('evidence-count').textContent = String(cards.length).padStart(2, '0');
 }
 function evidenceWarning(message) {
   const copy = {

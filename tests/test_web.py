@@ -370,3 +370,49 @@ def test_pdf_reading_preview_is_sharp_but_covers_stay_small(workspace):
         status, _, body = request(workspace, "/api/papers/P01/preview?page=1&width=240")
         assert status == 200 and fitz.Pixmap(body).width <= 241
         assert request(workspace, "/api/papers/P01/preview?page=2")[0] == 404
+
+
+def test_gemini_invalid_key_is_not_misreported_as_model_configuration():
+    from researchpilot.web import safe_error
+
+    error = type("BadRequestError", (Exception,), {})()
+    error.body = {"error": {"status": "INVALID_ARGUMENT", "message": "Please pass a valid API key"}}
+    status, message = safe_error(error)
+    assert status == 401 and "API key không hợp lệ" in message
+
+
+def test_rate_limit_does_not_assume_billing_is_exhausted():
+    from researchpilot.web import safe_error
+
+    error = type("RateLimitError", (Exception,), {})()
+    status, message = safe_error(error)
+    assert status == 429 and "không nhất thiết là hết tiền" in message
+
+
+def test_gemini_empty_response_and_nullable_usage():
+    from researchpilot.providers.llm import OpenAIGenerator, ProviderResponseError
+
+    constructor = MagicMock()
+    response = constructor.return_value.chat.completions.create.return_value
+    response.choices = []
+    with patch.dict("sys.modules", {"openai": SimpleNamespace(OpenAI=constructor)}):
+        llm = OpenAIGenerator(model="gemini-test", api_key="AIza-test", provider="gemini")
+        with pytest.raises(ProviderResponseError):
+            llm.generate("question")
+        response.choices = [SimpleNamespace(message=SimpleNamespace(content="{}"), finish_reason="stop")]
+        response.usage = SimpleNamespace(total_tokens=None, prompt_tokens=None, completion_tokens=None)
+        response.model = None
+        response.model_dump.return_value = {}
+        result = llm.generate("question")
+        assert result.total_tokens == 0
+        assert result.model_version == "gemini-test"
+
+
+def test_provider_response_error_is_actionable():
+    from researchpilot.providers.llm import ProviderResponseError
+    from researchpilot.web import safe_error
+
+    status, message = safe_error(ProviderResponseError("sensitive upstream details"))
+    assert status == 502
+    assert "sensitive" not in message
+    assert "model" in message.lower()

@@ -1,0 +1,10 @@
+.env
+.env.local
+.venv*/
+__pycache__/
+.pytest_cache/
+build/
+*.egg-info/
+
+tmp/web-server.log
+tmp/web-server.pid

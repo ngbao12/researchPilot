@@ -1,0 +1,201 @@
+{
+  "answer": {
+    "answer": "Bài học (ResNet): Sử dụng kết nối dư (residual connections) để tái định dạng các lớp thành hàm dư so với đầu vào, giúp đào tạo các mạng rất sâu trở nên dễ dàng hơn và cải thiện khả năng tối ưu hoá. [U1e0651b6810e, p.1, page-U1e0651b6810e-1]\n\nBài học (Transformer): Thiết kế mô hình chỉ dựa trên cơ chế attention, loại bỏ hoàn toàn các thành phần hồi quy và tích chập, cho phép mô hình song song hoá cao và giảm đáng kể thời gian đào tạo. [Ubdfaa68d8984, p.1, page-Ubdfaa68d8984-1]\n\nBài học chung: Cả hai mô hình đều cho thấy việc tái cấu trúc kiến trúc để đơn giản hoá các phép tính cốt lõi (bằng residual hoặc attention) giúp giảm khó khăn trong tối ưu hoá và tăng khả năng mở rộng quy mô của mạng. [U1e0651b6810e, p.1, page-U1e0651b6810e-1] [Ubdfaa68d8984, p.1, page-Ubdfaa68d8984-1]",
+    "abstained": false,
+    "citations": [
+      {
+        "paper_id": "U1e0651b6810e",
+        "page": 1,
+        "evidence_id": "page-U1e0651b6810e-1"
+      },
+      {
+        "paper_id": "Ubdfaa68d8984",
+        "page": 1,
+        "evidence_id": "page-Ubdfaa68d8984-1"
+      }
+    ],
+    "retrieved": [
+      "page-U1e0651b6810e-1",
+      "page-U1e0651b6810e-7",
+      "page-U1e0651b6810e-9",
+      "page-Ubdfaa68d8984-1",
+      "page-Ubdfaa68d8984-11",
+      "page-Ubdfaa68d8984-9"
+    ],
+    "mode": "table-rag",
+    "model_id": "groq/openai/gpt-oss-120b",
+    "model_version": "openai/gpt-oss-120b",
+    "prompt_template": "",
+    "temperature": 0.0,
+    "seed": null,
+    "latency_ms": 4710.112000000663,
+    "usage": {
+      "total_tokens": 5635
+    },
+    "warnings": [],
+    "retrieved_evidence": [
+      {
+        "evidence": {
+          "evidence_id": "page-U1e0651b6810e-1",
+          "paper_id": "U1e0651b6810e",
+          "source_url": "https://arxiv.org/pdf/1512.03385v1",
+          "page": 1,
+          "section": "",
+          "modality": "text",
+          "text": "Deep Residual Learning for Image Recognition\nKaiming He\nXiangyu Zhang\nShaoqing Ren\nJian Sun\nMicrosoft Research\n{kahe, v-xiangz, v-shren, jiansun}@microsoft.com\nAbstract\nDeeper neural networks are more difﬁcult to train. We\npresent a residual learning framework to ease the training\nof networks that are substantially deeper than those used\npreviously. We explicitly reformulate the layers as learn-\ning residual functions with reference to the layer inputs, in-\nstead of learning unreferenced functions. We provide com-\nprehensive empirical evidence showing that these residual\nnetworks are easier to optimize, and can gain accuracy from\nconsiderably increased depth. On the ImageNet dataset we\nevaluate residual nets with a depth of up to 152 layers—8×\ndeeper than VGG nets [41] but still having lower complex-\nity. An ensemble of these residual nets achieves 3.57% error\non the ImageNet test set. This result won the 1st place on the\nILSVRC 2015 classiﬁcation task. We also present analysis\non CIFAR-10 with 100 and 1000 layers.\nThe depth of representations is of central importance\nfor many visual recognition tasks. Solely due to our ex-\ntremely deep representations, we obtain a 28% relative im-\nprovement on the COCO object detection dataset. Deep\nresidual nets are foundations of our submissions to ILSVRC\n& COCO 2015 competitions1, where we also won the 1st\nplaces on the tasks of ImageNet detection, ImageNet local-\nization, COCO detection, and COCO segmentation.\n1. Introduction\nDeep convolutional neural networks [22, 21] have led\nto a series of breakthroughs for image classiﬁcation [21,\n50, 40]. Deep networks naturally integrate low/mid/high-\nlevel features [50] and classiﬁers in an end-to-end multi-\nlayer fashion, and the “levels” of features can be enriched\nby the number of stacked",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 0.0,
+        "rank": 1
+      },
+      {
+        "evidence": {
+          "evidence_id": "page-U1e0651b6810e-7",
+          "paper_id": "U1e0651b6810e",
+          "source_url": "https://arxiv.org/pdf/1512.03385v1",
+          "page": 7,
+          "section": "",
+          "modality": "text",
+          "text": "layers\n# params\nFitNet [35]\n19\n2.5M\n8.39\nHighway [42, 43]\n19\n2.3M\n7.54 (7.72±0.16)\nHighway [42, 43]\n32\n1.25M\n8.80\nResNet\n20\n0.27M\n8.75\nResNet\n32\n0.46M\n7.51\nResNet\n44\n0.66M\n7.17\nResNet\n56\n0.85M\n6.97\nResNet\n110\n1.7M\n6.43 (6.61±0.16)\nResNet\n1202\n19.4M\n7.93\nTable 6. Classiﬁcation error on the CIFAR-10 test set. All meth-\nods are with data augmentation. For ResNet-110, we run it 5 times\nand show “best (mean±std)” as in [43].\nso our residual models have exactly the same depth, width,\nand number of parameters as the plain counterparts.\nWe use a weight decay of 0.0001 and momentum of 0.9,\nand adopt the weight initialization in [13] and BN [16] but\nwith no dropout. These models are trained with a mini-\nbatch size of 128 on two GPUs. We start with a learning\nrate of 0.1, divide it by 10 at 32k and 48k iterations, and\nterminate training at 64k iterations, which is determined on\na 45k/5k train/val split. We follow the simple data augmen-\ntation in [24] for training: 4 pixels are padded on each side,\nand a 32×32 crop is randomly sampled from the padded\nimage or its horizontal ﬂip. For testing, we only evaluate\nthe single view of the original 32×32 image.\nWe compare n = {3, 5, 7, 9}, leading to 20, 32, 44, and\n56-layer networks. Fig. 6 (left) shows the behaviors of the\nplain nets. The deep plain nets suffer from increased depth,\nand exhibit higher training error when going deeper. This\nphenomenon is similar to that on ImageNet (Fig. 4, left) and\non MNIST (see [42]), suggesting that such an optimization\ndifﬁculty is a fundamental problem.\nFig. 6 (middle) shows the behaviors of ResNets. Also\nsimilar to the ImageNet cases (Fig. 4, right), our ResNets\nmanage to overcome the optimization difﬁculty and demon-\nstrate accuracy gains when the depth increases.\nWe further explore n = 18 that le",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 10.701012245655665,
+        "rank": 2
+      },
+      {
+        "evidence": {
+          "evidence_id": "page-U1e0651b6810e-9",
+          "paper_id": "U1e0651b6810e",
+          "source_url": "https://arxiv.org/pdf/1512.03385v1",
+          "page": 9,
+          "section": "",
+          "modality": "text",
+          "text": "rchies for accurate object detection and semantic segmentation. In\nCVPR, 2014.\n[9] X. Glorot and Y. Bengio. Understanding the difﬁculty of training\ndeep feedforward neural networks. In AISTATS, 2010.\n[10] I. J. Goodfellow, D. Warde-Farley, M. Mirza, A. Courville, and\nY. Bengio. Maxout networks. arXiv:1302.4389, 2013.\n[11] K. He and J. Sun. Convolutional neural networks at constrained time\ncost. In CVPR, 2015.\n[12] K. He, X. Zhang, S. Ren, and J. Sun. Spatial pyramid pooling in deep\nconvolutional networks for visual recognition. In ECCV, 2014.\n[13] K. He, X. Zhang, S. Ren, and J. Sun. Delving deep into rectiﬁers:\nSurpassing human-level performance on imagenet classiﬁcation. In\nICCV, 2015.\n[14] G. E. Hinton, N. Srivastava, A. Krizhevsky, I. Sutskever, and\nR. R. Salakhutdinov. Improving neural networks by preventing co-\nadaptation of feature detectors. arXiv:1207.0580, 2012.\n[15] S. Hochreiter and J. Schmidhuber. Long short-term memory. Neural\ncomputation, 9(8):1735–1780, 1997.\n[16] S. Ioffe and C. Szegedy. Batch normalization: Accelerating deep\nnetwork training by reducing internal covariate shift. In ICML, 2015.\n[17] H. Jegou, M. Douze, and C. Schmid. Product quantization for nearest\nneighbor search. TPAMI, 33, 2011.\n[18] H. Jegou, F. Perronnin, M. Douze, J. Sanchez, P. Perez, and\nC. Schmid. Aggregating local image descriptors into compact codes.\nTPAMI, 2012.\n[19] Y. Jia, E. Shelhamer, J. Donahue, S. Karayev, J. Long, R. Girshick,\nS. Guadarrama, and T. Darrell. Caffe: Convolutional architecture for\nfast feature embedding. arXiv:1408.5093, 2014.\n[20] A. Krizhevsky. Learning multiple layers of features from tiny im-\nages. Tech Report, 2009.\n[21] A. Krizhevsky, I. Sutskever, and G. Hinton. Imagenet classiﬁcation\nwith deep convolutional neural networks. In NIPS, 2012.\n[22] Y\n[...]\n\n1999.\n[50] M. D. Zeiler and R. Fergus. Visualizing and understanding convolu-\ntional neural networks. In ECCV, 2014.\n9",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 9.319735402290169,
+        "rank": 3
+      },
+      {
+        "evidence": {
+          "evidence_id": "page-Ubdfaa68d8984-1",
+          "paper_id": "Ubdfaa68d8984",
+          "source_url": "local-upload",
+          "page": 1,
+          "section": "",
+          "modality": "text",
+          "text": "Provided proper attribution is provided, Google hereby grants permission to\nreproduce the tables and figures in this paper solely for use in journalistic or\nscholarly works.\nAttention Is All You Need\nAshish Vaswani∗\nGoogle Brain\navaswani@google.com\nNoam Shazeer∗\nGoogle Brain\nnoam@google.com\nNiki Parmar∗\nGoogle Research\nnikip@google.com\nJakob Uszkoreit∗\nGoogle Research\nusz@google.com\nLlion Jones∗\nGoogle Research\nllion@google.com\nAidan N. Gomez∗†\nUniversity of Toronto\naidan@cs.toronto.edu\nŁukasz Kaiser∗\nGoogle Brain\nlukaszkaiser@google.com\nIllia Polosukhin∗‡\nillia.polosukhin@gmail.com\nAbstract\nThe dominant sequence transduction models are based on complex recurrent or\nconvolutional neural networks that include an encoder and a decoder. The best\nperforming models also connect the encoder and decoder through an attention\nmechanism. We propose a new simple network architecture, the Transformer,\nbased solely on attention mechanisms, dispensing with recurrence and convolutions\nentirely. Experiments on two machine translation tasks show these models to\nbe superior in quality while being more parallelizable and requiring significantly\nless time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-\nto-German translation task, improving over the existing best results, including\nensembles, by over 2 BLEU. On the WMT 2014 English-to-French translation task,\nour model establishes a new single-model state-of-the-art BLEU score of 41.8 after\ntraining for 3.5 days on eight GPUs, a small fraction of the training costs of the\nbest models from the literature. We show that the Transformer generalizes well to\nother tasks by applying it successfully to English constituency parsing both with\nlarge and limited training data.\n∗Equal contribution. Listing order is random. Jakob proposed\n[...]\n while at Google Research.\n31st Conference on Neural Information Processing Systems (NIPS 2017), Long Beach, CA, USA.\narXiv:1706.03762v7  [cs.CL]  2 Aug 2023",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 0.0,
+        "rank": 4
+      },
+      {
+        "evidence": {
+          "evidence_id": "page-Ubdfaa68d8984-11",
+          "paper_id": "Ubdfaa68d8984",
+          "source_url": "local-upload",
+          "page": 11,
+          "section": "",
+          "modality": "text",
+          "text": "works.\narXiv preprint\narXiv:1308.0850, 2013.\n[11] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for im-\nage recognition. In Proceedings of the IEEE Conference on Computer Vision and Pattern\nRecognition, pages 770–778, 2016.\n[12] Sepp Hochreiter, Yoshua Bengio, Paolo Frasconi, and Jürgen Schmidhuber. Gradient flow in\nrecurrent nets: the difficulty of learning long-term dependencies, 2001.\n[13] Sepp Hochreiter and Jürgen Schmidhuber. Long short-term memory. Neural computation,\n9(8):1735–1780, 1997.\n[14] Zhongqiang Huang and Mary Harper. Self-training PCFG grammars with latent annotations\nacross languages. In Proceedings of the 2009 Conference on Empirical Methods in Natural\nLanguage Processing, pages 832–841. ACL, August 2009.\n[15] Rafal Jozefowicz, Oriol Vinyals, Mike Schuster, Noam Shazeer, and Yonghui Wu. Exploring\nthe limits of language modeling. arXiv preprint arXiv:1602.02410, 2016.\n[16] Łukasz Kaiser and Samy Bengio. Can active memory replace attention? In Advances in Neural\nInformation Processing Systems, (NIPS), 2016.\n[17] Łukasz Kaiser and Ilya Sutskever. Neural GPUs learn algorithms. In International Conference\non Learning Representations (ICLR), 2016.\n[18] Nal Kalchbrenner, Lasse Espeholt, Karen Simonyan, Aaron van den Oord, Alex Graves, and Ko-\nray Kavukcuoglu. Neural machine translation in linear time. arXiv preprint arXiv:1610.10099v2,\n2017.\n[19] Yoon Kim, Carl Denton, Luong Hoang, and Alexander M. Rush. Structured attention networks.\nIn International Conference on Learning Representations, 2017.\n[20] Diederik Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In ICLR, 2015.\n[21] Oleksii Kuchaiev and Boris Ginsburg. Factorization tricks for LSTM networks. arXiv preprint\narXiv:1703.10722, 2017.\n[22] Zhouhan Lin, ",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 10.101861482636668,
+        "rank": 5
+      },
+      {
+        "evidence": {
+          "evidence_id": "page-Ubdfaa68d8984-9",
+          "paper_id": "Ubdfaa68d8984",
+          "source_url": "local-upload",
+          "page": 9,
+          "section": "",
+          "modality": "text",
+          "text": "Table 3: Variations on the Transformer architecture. Unlisted values are identical to those of the base\nmodel. All metrics are on the English-to-German translation development set, newstest2013. Listed\nperplexities are per-wordpiece, according to our byte-pair encoding, and should not be compared to\nper-word perplexities.\nN\ndmodel\ndff\nh\ndk\ndv\nPdrop\nϵls\ntrain\nPPL\nBLEU\nparams\nsteps\n(dev)\n(dev)\n×106\nbase\n6\n512\n2048\n8\n64\n64\n0.1\n0.1\n100K\n4.92\n25.8\n65\n(A)\n1\n512\n512\n5.29\n24.9\n4\n128\n128\n5.00\n25.5\n16\n32\n32\n4.91\n25.8\n32\n16\n16\n5.01\n25.4\n(B)\n16\n5.16\n25.1\n58\n32\n5.01\n25.4\n60\n(C)\n2\n6.11\n23.7\n36\n4\n5.19\n25.3\n50\n8\n4.88\n25.5\n80\n256\n32\n32\n5.75\n24.5\n28\n1024\n128\n128\n4.66\n26.0\n168\n1024\n5.12\n25.4\n53\n4096\n4.75\n26.2\n90\n(D)\n0.0\n5.77\n24.6\n0.2\n4.95\n25.5\n0.0\n4.67\n25.3\n0.2\n5.47\n25.7\n(E)\npositional embedding instead of sinusoids\n4.92\n25.7\nbig\n6\n1024\n4096\n16\n0.3\n300K\n4.33\n26.4\n213\ndevelopment set, newstest2013. We used beam search as described in the previous section, but no\ncheckpoint averaging. We present these results in Table 3.\nIn Table 3 rows (A), we vary the number of attention heads and the attention key and value dimensions,\nkeeping the amount of computation constant, as described in Section 3.2.2. While single-head\nattention is 0.9 BLEU worse than the best setting, quality also drops off with too many heads.\nIn Table 3 rows (B), we observe that reducing the attention key size dk hurts model quality. This\nsuggests that determining compatibility is not easy and that a more sophisticated compatibility\nfunction than dot product may be beneficial. We further observe in rows (C) and (D) that, as expected,\nbigger models are better, and dropout is very helpful in avoiding over-fitting. In row (E) we replace our\nsinusoidal positional encoding with learned positional embeddings [9], and observe nearly ",
+          "bbox": null,
+          "extraction_method": "pymupdf_text",
+          "chunk_index": null
+        },
+        "score": 8.125493224109594,
+        "rank": 6
+      }
+    ],
+    "evidence_terms": {
+      "page-U1e0651b6810e-1": [
+        "deep",
+        "image",
+        "learning",
+        "recognition",
+        "residual"
+      ],
+      "page-U1e0651b6810e-7": [
+        "all",
+        "compare",
+        "deep",
+        "image",
+        "learning",
+        "residual",
+        "resnet"
+      ],
+      "page-U1e0651b6810e-9": [
+        "architecture",
+        "deep",
+        "image",
+        "learning",
+        "performance",
+        "recognition"
+      ],
+      "page-Ubdfaa68d8984-1": [
+        "all",
+        "architecture",
+        "attention",
+        "contribution",
+        "need",
+        "transformer",
+        "you"
+      ],
+      "page-Ubdfaa68d8984-11": [
+        "attention",
+        "deep",
+        "learning",
+        "method",
+        "recognition",
+        "residual"
+      ],
+      "page-Ubdfaa68d8984-9": [
+        "all",
+        "architecture",
+        "attention",
+        "key",
+        "metrics",
+        "transformer"
+      ]
+    },
+    "support_quotes": {
+      "page-U1e0651b6810e-1": [
+        "Deep Residual Learning for Image Recognition\nKaiming He\nXiangyu Zhang\nShaoqing Ren\nJian Sun\nMicrosoft Research\n{kahe, v-xiangz, v-shren, jiansun}@microsoft.com\nAbstract\nDeeper neural networks are more difﬁcult to train. We\npresent a residual learning framework to ease the training\nof networks that are substantially deeper than those used\npreviously. We explicitly reformulate the layers as learn-\ning residual functions with reference to the layer inputs, in-\nstead of learning unreferenced functions. We provide com-\nprehensive empirical evidence showing that these residual\nnetworks are easier to optimize, and can gain accuracy from\n"
+      ],
+      "page-Ubdfaa68d8984-1": [
+        "The dominant sequence transduction models are based on complex recurrent or\nconvolutional neural networks that include an encoder and a decoder. The best\nperforming models also connect the encoder and decoder through an attention\nmechanism. We propose a new simple network architecture, the Transformer,\nbased solely on attention mechanisms, dispensing with recurrence and convolutions\nentirely. Experiments on two machine translation tasks show these models to\nbe superior in quality while being more parallelizable and requiring significantly\nless time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-\n"
+      ]
+    },
+    "limitations": [],
+    "usage_kind": "measured",
+    "retrieval_latency_ms": 0.0,
+    "timestamp": "2026-09-24T17:12:24.591722"
+  },
+  "unsupported": [],
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b"
+}

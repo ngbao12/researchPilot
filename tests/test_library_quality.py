@@ -434,3 +434,113 @@ def test_broad_comparison_keeps_both_overviews_and_exports_original_passages(sam
     prompt = json.loads(llm.generate.call_args.kwargs["prompt"])
     assert prompt["sources"][0]["page"] == 1 and prompt["sources"][2]["page"] == 1
     assert "passages" in prompt["sources"][0] and "text" not in prompt["sources"][0]
+
+
+def test_partial_answer_keeps_supported_claim_and_states_missing_information(sample_evidence):
+    from researchpilot.providers.llm import LLMResponse
+    from researchpilot.quality import answer_workspace
+    from researchpilot.web import Query
+
+    ev = sample_evidence[0].model_copy(update={"text": "The model used 8 P100 GPUs for training."})
+    payload = {
+        "abstain": False,
+        "claims": [
+            {"text": "Training used 8 P100 GPUs.", "sources": [{"id": "E1", "passage_id": "S1"}]}
+        ],
+        "limitations": ["Measured electricity in kWh is not supplied in the excerpts."],
+    }
+    llm = SimpleNamespace(
+        model_id="test",
+        generate=lambda **kw: LLMResponse(text=json.dumps(payload), model_id="test"),
+    )
+    with patch("researchpilot.quality.pages_for", return_value=[ev]):
+        answer = answer_workspace(
+            SimpleNamespace(), Query(question="How many GPUs and how many kWh?", language="en"), llm
+        )
+    assert not answer.abstained and len(answer.citations) == 1
+    assert answer.limitations == payload["limitations"]
+    assert answer.support_quotes[ev.evidence_id] == [ev.text]
+
+
+def test_missing_information_note_is_separated_without_dropping_supported_answer(sample_evidence):
+    from unittest.mock import Mock
+    from researchpilot.providers.llm import LLMResponse
+    from researchpilot.quality import answer_workspace
+    from researchpilot.web import Query
+
+    ev = sample_evidence[0].model_copy(update={"text": "We trained the model using 8 P100 GPUs."})
+    supported = {
+        "text": "The model used 8 P100 GPUs.",
+        "sources": [{"id": "E1", "passage_id": "S1"}],
+    }
+    bad = {
+        "abstain": False,
+        "claims": [supported, {"text": "Measured kWh is missing.", "sources": []}],
+    }
+    repaired = {
+        "abstain": False,
+        "claims": [supported],
+        "limitations": ["Measured kWh is missing."],
+    }
+    llm = SimpleNamespace(
+        model_id="test",
+        generate=Mock(
+            side_effect=[
+                LLMResponse(text=json.dumps(data), model_id="test") for data in [bad, repaired]
+            ]
+        ),
+    )
+    with patch("researchpilot.quality.pages_for", return_value=[ev]):
+        answer = answer_workspace(
+            SimpleNamespace(), Query(question="What GPUs and measured kWh?", language="en"), llm
+        )
+    assert llm.generate.call_count == 1
+    assert not answer.abstained and len(answer.citations) == 1
+    assert answer.limitations == repaired["limitations"]
+
+
+def test_unreferenced_factual_claim_is_not_disguised_as_a_limitation():
+    from researchpilot.quality import normalize_answer
+
+    data = {
+        "abstain": False,
+        "claims": [{"text": "This model achieves 99 percent accuracy.", "sources": []}],
+    }
+    normalized = normalize_answer(data)
+    assert not normalized["limitations"]
+    assert checked_claims(normalized, {})[2] == "Claim missing supporting quote"
+
+
+def test_semantic_selection_can_choose_passage_without_question_keywords(sample_evidence):
+    from researchpilot.quality import semantic_pages
+    from researchpilot.providers.llm import LLMResponse
+    from unittest.mock import Mock
+
+    source = sample_evidence[0].model_copy(update={
+        "text": "Identity shortcuts allow signals to propagate directly across layers.",
+        "page": 1,
+    })
+    llm = SimpleNamespace(generate=Mock(return_value=LLMResponse(
+        text=json.dumps({"selections": [{"id": "C0", "passage_ids": ["S1"]}]}),
+        model_id="test", total_tokens=25,
+    )))
+    selected, usage, method = semantic_pages(
+        "What can I learn from this design?", "lessons", [source],
+        [source.paper_id], llm, [],
+    )
+    assert method == "semantic" and usage == 25
+    assert selected[0][0].text == source.text
+
+
+def test_semantic_selection_rejects_invented_passages(sample_evidence):
+    from researchpilot.quality import semantic_pages
+    from researchpilot.providers.llm import LLMResponse
+    from unittest.mock import Mock
+
+    source = sample_evidence[0]
+    fallback = [(source, 1.0)]
+    llm = SimpleNamespace(generate=Mock(return_value=LLMResponse(
+        text='{"selections":[{"id":"C0","passage_ids":["S999"]}]}', model_id="test",
+    )))
+    selected, _, method = semantic_pages("lessons", "lessons", [source], [], llm, fallback)
+    assert selected == fallback and method == "lexical_fallback"

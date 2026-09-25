@@ -212,3 +212,32 @@ pytest -q
 ```
 
 CI runs the same offline checks on Python 3.11. Tests use synthetic PDFs and never require API credentials. Source code is declared MIT in project metadata; third-party papers retain their own licenses.
+
+### Key Groq dự phòng và câu hỏi tổng hợp
+
+Server hỗ trợ `GROQ_API_KEYS` trong `.env.local`: danh sách key phân cách bằng dấu phẩy.
+`GROQ_API_KEY` vẫn là key chính. Chỉ khi gọi API bị HTTP 429, server thử key dự phòng,
+mỗi key tối đa một lần trong một lượt sinh; key bị giới hạn được tạm nghỉ theo
+`Retry-After` (mặc định 60 giây). Các key không được gửi xuống giao diện hoặc ghi log.
+Nếu mọi key bị giới hạn, ứng dụng báo lỗi quota; nếu các key chung một hạn mức,
+chuyển key không làm tăng hạn mức đó. Lỗi xác thực/model/mạng không tự đổi key.
+Key do người dùng nhập trực tiếp trong tab vẫn có ưu tiên và không dùng pool server.
+
+Câu hỏi tiếng Việt được diễn giải thành truy vấn tìm nguồn, có tên các paper đã chọn.
+Câu hỏi bài học/tổng quan lấy thêm trang giới thiệu của mỗi paper. Model chọn mã
+đoạn gốc thay vì chép lại trích dẫn, giảm lỗi trích dẫn sai định dạng. Câu trả lời có
+thể trả phần đã xác định kèm mục “Phần chưa xác định từ nguồn”. Không có cam kết
+mọi câu hỏi đều trả lời được: thông tin không có trong tài liệu không được bịa ra.
+
+### Khi trình duyệt báo “fetch failed”
+
+Lỗi này có thể do server localhost đã dừng, chưa phải do API key. Khởi động độc lập
+với terminal/tác vụ bằng:
+
+```bash
+.venv311/bin/python scripts/start_web.py
+```
+
+Lệnh không tạo thêm server nếu ứng dụng đã chạy. Log ở `tmp/web-server.log`;
+PID ở `tmp/web-server.pid`. Không cần gửi key vào lệnh. Ứng dụng phân biệt lỗi
+mất kết nối local, key không hợp lệ và giới hạn API; không mặc định coi HTTP 429 là hết tiền.

@@ -3,6 +3,19 @@
 let language = 'vi';
 try { language = localStorage.getItem('researchpilot.language') === 'en' ? 'en' : 'vi'; } catch (_) {}
 const english = {
+  'Bước chọn theo ngữ nghĩa chưa thành công; đang dùng kết quả truy xuất dự phòng.':'Semantic selection was unavailable; showing fallback retrieval results.',
+  'Đoạn truy xuất chưa dùng':'Unused retrieval candidates',
+  'Hỗ trợ ý:':'Supports this point:',
+  'Giải thích của model:':'Model explanation:', 
+  'Các key Groq đang bị giới hạn. Hãy chờ rồi thử lại hoặc dùng Gemini. Các key có thể dùng chung hạn mức.':'The Groq keys are rate limited. Wait and retry, or use Gemini. Keys may share a quota.',
+
+  'Nhà cung cấp API đang giới hạn yêu cầu. Hãy chờ rồi thử lại; lỗi này không nhất thiết là hết tiền.':'The API provider is rate limiting requests. Wait and retry; this does not necessarily mean you are out of credit.',
+
+  'Yêu cầu mất quá nhiều thời gian. Hãy thử lại sau.':'The request timed out. Please try again later.',
+  'Không kết nối được ResearchPilot trên máy. Hãy khởi động lại server rồi thử lại; đây chưa phải lỗi API key.':'Cannot reach the local ResearchPilot server. Start the server and try again; this does not indicate an invalid API key.',
+  'Server trả về dữ liệu không hợp lệ. Hãy tải lại trang và thử lại.':'The server returned an invalid response. Reload the page and try again.',
+
+  'TRẢ LỜI MỘT PHẦN':'PARTIAL ANSWER', 'Phần chưa xác định từ nguồn:':'Not established by the sources:',
   'Các nguồn tìm được chưa đủ để trả lời đầy đủ câu hỏi.':'The retrieved sources do not fully support an answer.',
   'Model chưa trích đúng nguyên văn từ nguồn. Câu trả lời được giữ lại để tránh dẫn chứng sai.':'The model did not quote the source accurately. The answer was withheld to avoid an invalid citation.',
   'Model viện dẫn nguồn không có trong các đoạn tìm được.':'The model cited a source outside the retrieved excerpts.',
@@ -115,6 +128,7 @@ function t(value) {
   const key = value.trim();
   if (Object.hasOwn(english, key)) return value.replace(key, english[key]);
   return value
+    .replace(/^Các key Groq đang bị giới hạn\. Thử lại sau khoảng (\d+) giây, hoặc dùng Gemini\. Các key có thể dùng chung hạn mức\.$/, 'The Groq keys are rate limited. Retry in about $1 seconds, or use Gemini. Keys may share a quota.')
     .replace(/^(\d+) tài liệu$/, '$1 papers')
     .replace(/^(\d+) trang · (\d+) đoạn trích$/, '$1 pages · $2 excerpts')
     .replace(/^(\d+) papers · Chọn nguồn cho câu hỏi của bạn$/, '$1 papers · Choose sources for your question')
