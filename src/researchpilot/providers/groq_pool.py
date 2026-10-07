@@ -82,7 +82,6 @@ class GroqPoolGenerator(OpenAIGenerator):
 
     def generate(self, *args, **kwargs):
         attempted = set()
-        last_rate_error = None
         while True:
             attempted.add(self.key_index)
             try:
@@ -90,20 +89,13 @@ class GroqPoolGenerator(OpenAIGenerator):
             except Exception as exc:
                 if getattr(exc, "status_code", None) != 429:
                     raise
-                last_rate_error = exc
                 self.pool.limited(self.key_index, exc)
                 try:
                     index, key = self.pool.choose(attempted)
                 except GroqQuotaExhausted:
-                    # All keys attempted this round — try waiting for cooldown
-                    # recovery with the full pool (no exclusions).
-                    try:
-                        index, key = self.pool.choose()
-                    except GroqQuotaExhausted:
-                        # Cooldown wait also failed; re-raise the original API
-                        # error so the caller sees the real reason (daily limit,
-                        # per-minute limit, etc.).
-                        raise last_rate_error from None
+                    # Try each key at most once per generation. A later request may
+                    # wait for cooldown, but persistent 429s must end this request.
+                    raise exc from None
                 self._client.close()
                 from openai import OpenAI
 

@@ -1,145 +1,133 @@
 # ResearchPilot
 
-**Không chỉ đọc câu trả lời — mở được trang paper đứng sau mỗi nhận định.**
+[![CI](https://github.com/ngbao12/researchPilot/actions/workflows/ci.yml/badge.svg)](https://github.com/ngbao12/researchPilot/actions/workflows/ci.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-ResearchPilot là workspace chạy trên máy cá nhân để đọc paper, đặt câu hỏi và so sánh tài liệu. Bạn có thể thêm PDF từ máy hoặc đường dẫn Internet, chọn nguồn muốn hỏi, rồi kiểm tra các đoạn trích ngay bên cạnh câu trả lời.
+A local workspace for reading scientific papers, asking questions, and comparing findings with page-level source evidence.
 
-Dự án có giao diện **tiếng Việt / English**, tích hợp **Groq, Gemini và OpenAI**, cùng CLI phục vụ truy xuất và đánh giá thử nghiệm. Chế độ offline không cần API key, nhưng chỉ trả trích đoạn từ nguồn, không tổng hợp như LLM.
+ResearchPilot combines a bilingual English/Vietnamese web interface with a reproducible command-line retrieval pipeline. Use offline quotations without an API key, or connect Groq, Gemini, or OpenAI to synthesize answers from selected papers.
 
-## Chức năng
+**Status:** experimental, single-user software for localhost. Citation checks establish that quoted evidence exists in a source; they do not independently verify every interpretation made by a model. The project has no independent evaluation supporting a general accuracy claim.
 
-- **Thư viện PDF:** nhập file hoặc link PDF/arXiv, nhận diện file trùng, lưu thư viện qua các lần khởi động.
-- **Hỏi và so sánh:** giới hạn câu hỏi theo các paper đã chọn; so sánh hai tài liệu và trả lời phần có căn cứ khi thông tin chưa đầy đủ.
-- **Bằng chứng cạnh câu trả lời:** hiện đoạn nguồn, ý được hỗ trợ và giải thích của model; thu gọn những đoạn truy xuất chưa được sử dụng.
-- **Truy xuất cho câu hỏi trừu tượng:** câu hỏi tổng quan/bài học có thêm bước chọn đoạn theo ngữ nghĩa bằng LLM, sau bước tạo tập ứng viên.
-- **Đối chiếu PDF:** bấm trích dẫn để mở trang nguồn; xem thêm ngữ cảnh hoặc mở PDF gốc.
-- **Cấu hình model trên giao diện:** nhập API key, chọn model và kiểm tra kết nối. Server hỗ trợ nhiều key Groq dự phòng.
-- **Ghi chú nghiên cứu:** lịch sử trong phiên tab và xuất câu trả lời thành Markdown.
-- **CLI đánh giá:** benchmark, ablation, xuất dữ liệu để con người chấm tính đúng và mức hỗ trợ của trích dẫn.
+## Features
 
-> Đây là bản thử nghiệm dành cho một người dùng trên localhost. Kiểm tra trích dẫn xác nhận đoạn văn có trong nguồn, **không chứng minh mọi diễn giải của model đều đúng**. Dự án chưa có kết quả đánh giá độc lập đủ để công bố độ chính xác của hệ thống.
+- Import local PDFs, public PDF URLs, and arXiv links; detect duplicates and persist the library.
+- Ask questions about selected papers or compare exactly two papers.
+- Inspect evidence beside each answer and open the original PDF page.
+- Expand long excerpts and distinguish cited evidence from unused retrieval candidates.
+- Switch between English and Vietnamese; export session answers as Markdown.
+- Configure API providers and models in the browser, or use a server-side Groq key pool.
+- Run CLI benchmarks, ablations, citation checks, and human-review exports.
 
-## Bắt đầu
+## Quick start
 
-Yêu cầu **Python 3.11 trở lên**; môi trường được kiểm tra của dự án dùng Python 3.11. Chạy các lệnh dưới đây từ thư mục repository.
+Use **Python 3.11 or newer**. Local validation uses Python 3.11. Run commands from the repository root; configuration and data paths are relative to it.
 
-### 1. Cài đặt
+### 1. Install
 
 ```bash
 git clone https://github.com/ngbao12/researchPilot.git
 cd researchPilot
-
-python3.11 -m venv .venv311
-source .venv311/bin/activate
-python -m pip install -r requirements.lock
-python -m pip install '.[api]'
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e '.[api]'
 ```
 
-`requirements.lock` cố định môi trường offline và công cụ phát triển. SDK API là dependency bổ sung, chưa được cố định trong lock này. Nếu chỉ dùng offline, thay lệnh cuối bằng `python -m pip install --no-deps .`.
+On Windows, create the environment with `py -3.11 -m venv .venv` and activate it with `.venv\Scripts\Activate.ps1` in PowerShell. Windows support has not been locally validated.
 
-### 2. Tạo thư viện ban đầu
+For offline use, install `-e .` instead of `-e '.[api]'`. For the pinned offline development dependencies, install `-r requirements.lock`, then `-e . --no-deps`. The lock file does not include the optional API or semantic-embedding dependencies and is not a hash-verified lock.
+
+### 2. Build the initial library
 
 ```bash
 python scripts/build_corpus.py --config configs/default.yaml
 ```
 
-Script tải các paper trong [manifest](data/papers_manifest.json), trích xuất nội dung và tạo chỉ mục tại `artifacts/current`. Bước này cần Internet nếu PDF chưa có trên máy. Nếu đã có đủ PDF, thêm `--skip-download`.
+This downloads the papers in [the manifest](data/papers_manifest.json), extracts their contents, and builds `artifacts/current`. Internet access is required unless the PDFs already exist. Use `--skip-download` when all manifest PDFs are available locally.
 
-**Cần hoàn tất bước này trước khi mở web lần đầu.** Không cần dựng lại corpus mỗi lần chạy ứng dụng. Sau khi có thư viện, thêm paper mới trực tiếp trên giao diện.
+**Complete this step before starting the web app for the first time.** You do not need to rebuild on every launch. Add further papers through the interface.
 
-### 3. Mở ứng dụng
+PDF fingerprints are checked against the manifest. If an upstream paper has changed, obtain the matching version or create a separately reviewed manifest; do not bypass a mismatch by silently replacing its hash. PDFs and generated indexes are local data, not part of a fresh source checkout.
 
-```bash
-python scripts/start_web.py
-```
-
-Truy cập **http://127.0.0.1:8765**. Script chạy server nền và không tạo thêm tiến trình nếu địa chỉ đó đã có workspace hoạt động.
-
-Để chạy trong Terminal và dừng bằng `Ctrl+C`:
+### 3. Start the app
 
 ```bash
 researchpilot-web --root . --port 8765
 ```
 
-Log của server nền nằm ở `tmp/web-server.log`, PID ở `tmp/web-server.pid`. Có thể đổi cổng bằng `python scripts/start_web.py --port 8766`.
+Open [http://127.0.0.1:8765](http://127.0.0.1:8765). Stop the foreground server with `Ctrl+C`.
 
-## Sử dụng giao diện
+Alternatively, `python scripts/start_web.py` starts a background server and reuses an existing healthy server on that port. Its log and PID are written to `tmp/web-server.log` and `tmp/web-server.pid`. Use `--port 8766` to select another port.
 
-1. Chọn các paper trong **Tài liệu trên bàn**, hoặc bấm **+ Thêm paper**.
-2. Mở **Kết nối model**, chọn nhà cung cấp, nhập key và model ID phù hợp với tài khoản. Bấm **Kiểm tra kết nối**, rồi **Áp dụng**.
-3. Chọn **Hỏi tài liệu** hoặc **So sánh hai paper**; chế độ so sánh cần chọn đúng hai tài liệu.
-4. Nhập câu hỏi và bấm **Tìm câu trả lời**. Có thể hỏi bằng tiếng Việt; ngôn ngữ câu trả lời theo lựa chọn **VI / EN**.
-5. Đọc bằng chứng bên cạnh và bấm trích dẫn để đối chiếu trang PDF.
+## Using the workspace
 
-Ví dụ:
+1. Select papers in the library or use the import button.
+2. Open the model connection settings. Select **Offline**, or enter a provider, API key, and model ID available to your account. Test the connection and apply the settings.
+3. Ask a question, or choose the comparison mode with exactly two papers selected.
+4. Read the answer alongside its evidence. Click a citation to inspect the PDF page.
+5. Export useful answers as Markdown before closing or reloading the tab.
 
-- “MobileNet giảm chi phí tính toán bằng cách nào?”
-- “EfficientNet-B7 đạt độ chính xác ImageNet bao nhiêu?”
-- “Điểm đáng học từ thiết kế của ResNet và Transformer là gì?” — cần thêm và chọn hai paper tương ứng.
+Example questions:
 
-Bản dịch giao diện không dịch lại câu trả lời đã có hoặc đoạn nguồn nguyên văn. Đoạn trích dài được thu gọn; phần **Xem thêm ngữ cảnh** giữ văn bản trích xuất để đối chiếu.
+- “How does MobileNet reduce computational cost?”
+- “What ImageNet accuracy does EfficientNet-B7 report?”
+- “How do these two papers approach model scaling?”
 
-### Thêm paper
+The language switch controls the interface and subsequent answers. It does not translate existing answers or verbatim source passages. Long excerpts can be expanded; the additional context view retains extracted source text.
 
-Hỗ trợ file PDF trên máy, link PDF công khai và link arXiv. Giới hạn nhập từ web là **30 MB / 200 trang**. PDF scan cần OCR trước; ứng dụng chưa có OCR tích hợp.
+### PDF imports
 
-File trùng được nhận diện bằng SHA-256. Dữ liệu thư viện được lưu ở `data/papers`, `artifacts/library_versions` và con trỏ `artifacts/library-active.json`. Import lỗi không thay thế thư viện đang dùng. URL trỏ đến mạng nội bộ bị từ chối.
+Web imports accept PDFs up to **30 MB and 200 pages**. Scanned documents need external OCR first. SHA-256 fingerprints identify duplicates. Imports are stored under `data/papers` and `artifacts/library_versions`, with `artifacts/library-active.json` selecting the active library. Failed imports do not replace the active library. URLs resolving to private networks are rejected.
 
-## API key và quyền riêng tư
+## API configuration and privacy
 
-| Cách dùng | Cấu hình |
+| Mode | Configuration |
 | --- | --- |
-| Groq, Gemini hoặc OpenAI riêng | Nhập key và model ID trong **Kết nối model** |
-| Groq mặc định cho máy này | Đặt `GROQ_API_KEY` trong môi trường hoặc `.env.local` |
-| Groq dự phòng | Đặt `GROQ_API_KEYS`, các key cách nhau bằng dấu phẩy |
-| Không gửi dữ liệu tới API | Chọn **Offline** |
+| Offline quotations | Select Offline; no API key required |
+| Personal Groq, Gemini, or OpenAI connection | Enter a key and model ID in the web settings |
+| Default Groq connection | Set `GROQ_API_KEY` in the environment or `.env.local` |
+| Groq fallback keys | Set comma-separated `GROQ_API_KEYS` |
 
-Ví dụ `.env.local` — thay các giá trị mẫu bằng cấu hình của bạn:
-
-```dotenv
-GROQ_API_KEY=your_primary_groq_key
-GROQ_API_KEYS=your_backup_key_1,your_backup_key_2
-GROQ_MODEL=openai/gpt-oss-120b
-```
+To configure server-side defaults:
 
 ```bash
+cp .env.example .env.local
+# Edit .env.local with your own values.
 chmod 600 .env.local
 ```
 
-Biến môi trường có ưu tiên hơn `.env.local`. File này được bỏ qua bởi Git; **không commit API key**. Khởi động lại server sau khi thay cấu hình server.
+Restart the server after changing these defaults. Nonempty environment values take precedence over `.env.local`. No shared API key is provided by this repository.
 
-- Key nhập trong tab có ưu tiên hơn key mặc định. Nếu để trống key, ứng dụng dùng Groq mặc định **nếu đã cấu hình trên máy**; repository không cung cấp key dùng chung.
-- Key tùy chỉnh chỉ tồn tại trong bộ nhớ tab và request tới server local. Tải lại hoặc đóng tab sẽ xóa key tùy chỉnh và lịch sử phiên. Lựa chọn ngôn ngữ được lưu riêng trong browser storage.
-- Key mặc định nằm phía server, không được trả về giao diện. Key tùy chỉnh không dùng pool Groq dự phòng của server.
-- Khi gặp giới hạn API, pool Groq có thể chờ hoặc thử key khác. Các key có thể dùng chung quota; thêm key không đồng nghĩa tăng hạn mức.
-- Câu hỏi và các đoạn nguồn được gửi tới nhà cung cấp đang chọn để xử lý. Lượt lập kế hoạch, chọn bằng chứng hoặc sửa trích dẫn có thể phát sinh thêm token và độ trễ.
-- **Kiểm tra kết nối** kiểm tra quyền truy cập model; không bảo đảm một lượt sinh câu trả lời dài sẽ thành công hoặc còn đủ quota.
+- Custom keys stay in tab memory and are sent to the local server with requests. Reloading or closing the tab clears custom keys and session history; the language preference is stored separately in browser storage.
+- Server-side default keys are not returned to the browser. Custom keys do not use the server's fallback key pool.
+- A blank custom key falls back to the configured server-side Groq connection, if one exists.
+- Questions and selected evidence are sent to the chosen provider. Planning, evidence selection, and citation repair may involve additional calls, latency, and token charges.
+- Multiple Groq keys can share a quota. Adding keys does not guarantee additional capacity.
+- The connection test checks model access, not successful answer generation or remaining quota.
 
-Gemini dùng adapter tương thích OpenAI. Model khả dụng phụ thuộc tài khoản; có thể sửa model ID trong giao diện. Các bài test mock kiểm tra định tuyến và xử lý lỗi, không thay thế kiểm thử trực tiếp với key thật.
+Gemini uses the OpenAI-compatible adapter. Provider routing and error handling are covered by mocked tests; live provider behavior still depends on account permissions and service availability.
 
-## Câu trả lời và bằng chứng được tạo như thế nào?
+## How it works
 
 ```text
-PDF → trích xuất theo trang → chọn ứng viên truy xuất
-                                  ↓
-                 chọn đoạn theo ngữ nghĩa cho câu hỏi tổng quan
-                                  ↓
-                 model tạo nhận định + mã đoạn nguồn
-                                  ↓
-                 kiểm tra nguồn → câu trả lời + trích dẫn trang
+PDFs → page extraction → retrieval candidates → evidence selection
+                                                      ↓
+                              model claims + source identifiers
+                                                      ↓
+                              source validation → cited answer
 ```
 
-Trong luồng web dùng API với `table-rag`, hệ thống truy xuất văn bản trang, giữ ngữ cảnh bảng và diễn giải câu hỏi tiếng Việt thành truy vấn tìm nguồn. Câu hỏi tổng quan/bài học bổ sung các trang mở đầu, cuối tài liệu và bước lựa chọn bằng LLM. Bước này vẫn phụ thuộc tập ứng viên; không phải tìm kiếm ngữ nghĩa toàn bộ corpus bằng embedding.
+The API-backed web `table-rag` path retrieves page text, preserves table context, and can reformulate Vietnamese questions for retrieval. Broad questions add opening and closing pages and an LLM-based evidence selection step. This still depends on the candidate set; it is not embedding search over every page.
 
-Model chọn mã đoạn có sẵn; server kiểm tra nguồn và tự gắn paper/trang. Một số lỗi định dạng trích dẫn được thử sửa một lần. Nếu không xác nhận được nguồn, câu trả lời có thể bị giữ lại. Nếu chỉ có căn cứ cho một phần câu hỏi, ứng dụng có thể trả lời phần đó và ghi rõ thông tin còn thiếu.
+Models select existing evidence identifiers. The server validates sources and attaches paper/page references, with one repair attempt for some citation formatting failures. It can withhold unsupported answers or return a supported partial answer with missing information identified. Model-written explanations are not independent verification, and retrieval scores are not probabilities of correctness.
 
-Phần **Giải thích của model** mô tả liên hệ giữa nguồn và nhận định, không phải kết quả kiểm chứng độc lập. Luôn đọc nguồn khi sử dụng các kết luận quan trọng. Điểm truy xuất không phải xác suất câu trả lời đúng.
+Other modes and CLI benchmarks use the original extraction → provenance-aware chunks → FAISS index → retrieval → generation → citation-validation pipeline. CLI results do not fully measure the newer web workflow.
 
-Các chế độ khác và benchmark CLI dùng pipeline gốc: trích xuất → chunk có thông tin nguồn → chỉ mục FAISS → truy xuất → sinh câu trả lời → kiểm tra trích dẫn. Kết quả CLI không đại diện đầy đủ cho luồng web mới.
+## Command-line usage
 
-## CLI
-
-Cấu hình mặc định tại [configs/default.yaml](configs/default.yaml) dùng truy xuất lexical và trả trích đoạn offline, không gọi API.
+The [default configuration](configs/default.yaml) uses lexical retrieval and literal offline quotations.
 
 ```bash
 researchpilot ask --question "What is the key architectural innovation in MobileNets?" --paper-id P01
@@ -148,55 +136,72 @@ researchpilot compare --paper-a P01 --paper-b P02 --question "How do width and r
 researchpilot inspect --query "depthwise separable convolution" --paper-id P01
 ```
 
-Để dùng OpenAI trong CLI, đặt `OPENAI_API_KEY` trong môi trường hoặc `.env`, sao chép cấu hình mặc định và sửa `generate.llm_provider: openai`, `generate.llm_model`. Chạy bằng `researchpilot --config PATH ...`. Cấu hình CLI này riêng với kết nối model trên giao diện web.
+For OpenAI-backed CLI generation, set `OPENAI_API_KEY` in the environment or `.env`, copy the default configuration, and set `generate.llm_provider: openai` and `generate.llm_model`. Run `researchpilot --config PATH ...`. CLI configuration is separate from web connection settings.
 
-Provider embedding sentence-transformers là tùy chọn qua `python -m pip install '.[semantic]'`. Đổi provider/model/kích thước embedding cần dựng chỉ mục mới; không dùng chỉ mục cũ với cấu hình khác.
+Optional sentence-transformer embeddings require `python -m pip install -e '.[semantic]'`. Rebuild the index after changing the embedding provider, model, or dimension.
 
-## Đánh giá và phát triển
+### Evaluation
 
 ```bash
 researchpilot benchmark --questions data/questions.jsonl --out results/my-run
 researchpilot evaluate --run results/my-run --out reports/my-run.md
-
 python scripts/run_baselines.py --questions data/questions.jsonl --out results/ablation-run --ablations
 python scripts/audit_data.py --out reports/data-audit
-
-ruff check src scripts tests
-pytest -q
 ```
 
-Benchmark không ghi đè predictions đã có; dùng thư mục output mới cho mỗi lần chạy. Khi dùng index khác, truyền `--index-dir` và giữ cấu hình embedding khớp với index. Test offline không cần API key; muốn kiểm tra API thật cần cấu hình riêng.
+Use a fresh output directory for each benchmark; existing predictions are not overwritten. When passing a different `--index-dir`, keep the embedding configuration consistent with that index.
 
-Các chỉ số trích dẫn cấu trúc, coverage và evidence recall đo những khía cạnh khác nhau; không được gọi chung là độ chính xác câu trả lời. Chấm tính đúng và mức hỗ trợ ngữ nghĩa cần con người đọc nguồn. Những câu hỏi cũ đã được dùng trong quá trình phát triển, chưa tạo thành tập held-out độc lập.
+Structural citation validity, coverage, and evidence recall measure different things. Answer correctness and semantic support require human review. The legacy questions were used during development and are not an untouched held-out set.
 
-Đọc thêm:
+## Development
 
-- [Dữ liệu và nguồn paper](data/README.md)
-- [Tình trạng yêu cầu nghiên cứu](reports/requirements_status.md)
-- [Báo cáo thí nghiệm nền](reports/experiment_report.md)
-- [Phân tích lỗi](reports/failure_analysis.md)
-- [Kiểm thử import, Gemini và evidence](reports/ui-import-gemini-evidence-20260924.md)
+```bash
+python -m pip install -e '.[dev,api]'
+ruff check src scripts tests
+pytest -q
+node --check src/researchpilot/web_assets/app.js
+node --check src/researchpilot/web_assets/i18n.js
+python -m pip wheel --no-deps . --wheel-dir dist
+```
 
-Các báo cáo ghi nhận trạng thái tại thời điểm chạy, không phải cam kết cho mọi phiên bản hoặc mọi nhà cung cấp API.
+Tests use synthetic PDFs and mocked providers; they do not require a downloaded corpus or API keys. Node.js is needed only for JavaScript syntax checks. GitHub Actions runs lint, tests, asset checks, and a package build on Python 3.11 and 3.12.
 
-## Xử lý lỗi thường gặp
+```text
+configs/                  Pipeline configuration
+src/researchpilot/        Extraction, retrieval, generation, CLI, and web server
+src/researchpilot/web_assets/  Browser interface
+scripts/                  Corpus, evaluation, audit, and startup helpers
+tests/                    Automated regression tests
+data/                     Source manifest and draft evaluation questions
+reports/                  Historical evaluation and validation notes
+artifacts/                Local generated corpus and indexes (ignored)
+```
 
-| Hiện tượng | Cách kiểm tra |
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow and [SECURITY.md](SECURITY.md) for vulnerability reporting.
+
+## Troubleshooting
+
+| Symptom | Next step |
 | --- | --- |
-| Không mở được web / `fetch failed` | Chạy `python scripts/start_web.py`; xem `tmp/web-server.log` nếu server không lên |
-| Không tìm thấy corpus/index | Chạy bước tạo thư viện ban đầu từ thư mục repository |
-| Key không hợp lệ / model không truy cập được | Kiểm tra key, nhà cung cấp và model ID trong **Kết nối model** |
-| HTTP 429 / giới hạn API | Kiểm tra quota của tài khoản; chờ hoặc đổi nhà cung cấp. Không mặc định coi mọi 429 là hết tiền |
-| Model trả phản hồi rỗng | Thử lại hoặc chọn model khác; nút kiểm tra kết nối không kiểm tra sinh nội dung |
-| Chưa đủ bằng chứng | Kiểm tra đã chọn đúng paper, mở đoạn nguồn, hoặc hỏi rõ hơn. Không có cơ chế bảo đảm trả lời mọi câu hỏi |
-| Giao diện vẫn giống bản cũ | Tải lại trang rồi gửi lại câu hỏi; lưu ghi chú cần thiết trước khi tải lại |
+| Missing corpus or index | Build the initial library from the repository root |
+| Package import fails | Activate the virtual environment and run `python -m pip install -e .` |
+| Browser cannot connect | Start the server; inspect `tmp/web-server.log` if using the background helper |
+| Invalid key or inaccessible model | Check provider, key, and model ID in connection settings |
+| HTTP 429 | Check account quota and rate limits; wait or choose another provider |
+| Empty model response | Retry or select a different model; the connection test does not generate content |
+| Insufficient evidence | Confirm the selected papers, inspect sources, and narrow the question |
+| Interface appears stale | Export useful notes, reload the page, and ask again |
 
-## Giới hạn hiện tại
+## Limitations and research status
 
-- Server chỉ phục vụ `127.0.0.1`, chưa có xác thực hay thiết kế triển khai công khai cho nhiều người dùng.
-- Trích xuất PDF có thể lẫn cột, ngắt chữ hoặc đọc sai bảng; chưa có OCR và chưa hoàn thiện suy luận trực tiếp trên hình.
-- `caption-rag` dùng văn bản/caption, không phải phân tích hình bằng model thị giác. Luồng đánh giá `vlm-rag` chưa được triển khai hoàn chỉnh.
-- Offline chỉ trích nguồn; không thực hiện tổng hợp và so sánh như LLM.
-- Việc chọn bằng chứng và giải thích của LLM có thể sai. Bộ dữ liệu hiện tại chưa đủ cho kết luận nghiên cứu về chất lượng tổng quát.
+- The server binds to `127.0.0.1` and has no multi-user authentication. Public deployment is outside its current design.
+- PDF extraction can mix columns, split words, or misread tables. Integrated OCR and full visual reasoning are not implemented.
+- `caption-rag` uses text/captions; it is not a vision-model analysis of figures. The `vlm-rag` evaluation path is incomplete.
+- Offline mode quotes sources; it does not synthesize or compare findings like an LLM.
+- Model evidence selection and explanations can be wrong. The current dataset is insufficient for broad research claims.
 
-Mã nguồn khai báo giấy phép **MIT** trong metadata dự án. Các paper và tài nguyên bên thứ ba giữ giấy phép riêng.
+Further context: [data provenance](data/README.md), [requirements status](reports/requirements_status.md), [experiment report](reports/experiment_report.md), [failure analysis](reports/failure_analysis.md), and [web validation notes](reports/ui-import-gemini-evidence-20260924.md). Historical reports describe the versions and runs recorded at their dates.
+
+## License
+
+Project source code is licensed under the [MIT License](LICENSE). Papers and other third-party material retain their own licenses; see [data provenance](data/README.md). Local PDFs, indexes, caches, and new benchmark runs are ignored. Historical evaluation results remain tracked for the accompanying reports; older Git history may still contain PDFs and generated artifacts.

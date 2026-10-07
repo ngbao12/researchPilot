@@ -75,6 +75,10 @@ function renderSource() {
   $('open-pdf').href = `/api/papers/${encodeURIComponent(paper.id)}/pdf#page=${page}`;
   $('previous-page').disabled = page === 1; $('next-page').disabled = page === paper.pages;
 }
+// Reflow PDF line breaks for display only; citation text stays unchanged.
+function readableExcerpt(text) {
+  return String(text || '').replace(/([A-Za-z])-\s*\r?\n\s*(?=[a-z])/g, '$1-').replace(/\s+/g, ' ').trim();
+}
 function renderAnswer(item) {
   state.active = item;
   const answer = item.result.answer;
@@ -105,7 +109,21 @@ function renderAnswer(item) {
     box.append(header,el('h4','',shortName(paperById(e.paper_id) || {id:e.paper_id,title:e.paper_id})),el('div','evidence-page',t('Trang')+' '+e.page));
     const excerpt = el('blockquote','source-quote');
     const preview = quotes.length ? quotes.join(' … ') : e.text.slice(0,360) + (e.text.length>360 ? '…' : '');
-    excerpt.textContent = preview; box.append(excerpt);
+    const readable = readableExcerpt(preview);
+    const longQuote = readable.length > 650;
+    const shortened = longQuote ? readable.slice(0, 650).replace(/\s+\S*$/, '') + '…' : readable;
+    excerpt.textContent = shortened; box.append(excerpt);
+    if (longQuote) {
+      const toggle = el('button', 'source-open', 'Xem toàn bộ đoạn trích');
+      toggle.type = 'button'; toggle.setAttribute('aria-expanded', 'false');
+      toggle.onclick = () => {
+        const expanded = toggle.getAttribute('aria-expanded') !== 'true';
+        excerpt.textContent = expanded ? readable : shortened;
+        toggle.setAttribute('aria-expanded', String(expanded));
+        toggle.textContent = t(expanded ? 'Thu gọn đoạn trích' : 'Xem toàn bộ đoạn trích');
+      };
+      box.append(toggle);
+    }
     const why = el('div','evidence-why'); why.append(el('strong','', 'Vì sao liên quan?'));
     const supports = (answer.evidence_support || {})[e.evidence_id] || [];
     if (supports.length) supports.forEach(support => {

@@ -15,6 +15,11 @@ dependencies = [
     "python-dotenv==1.2.1", "numpy==2.4.2", "Pillow==12.1.1",
 ]
 
+[project.urls]
+Homepage = "https://github.com/ngbao12/researchPilot"
+Repository = "https://github.com/ngbao12/researchPilot"
+Issues = "https://github.com/ngbao12/researchPilot/issues"
+
 [project.optional-dependencies]
 dev = ["pytest==9.0.2", "ruff==0.15.1"]
 api = ["openai>=1.30.0,<3"]

@@ -3,6 +3,8 @@
 let language = 'vi';
 try { language = localStorage.getItem('researchpilot.language') === 'en' ? 'en' : 'vi'; } catch (_) {}
 const english = {
+  'Xem toàn bộ đoạn trích':'Show full excerpt',
+  'Thu gọn đoạn trích':'Collapse excerpt',
   'Bước chọn theo ngữ nghĩa chưa thành công; đang dùng kết quả truy xuất dự phòng.':'Semantic selection was unavailable; showing fallback retrieval results.',
   'Đoạn truy xuất chưa dùng':'Unused retrieval candidates',
   'Hỗ trợ ý:':'Supports this point:',

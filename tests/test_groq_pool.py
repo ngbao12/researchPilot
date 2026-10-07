@@ -52,10 +52,39 @@ def test_exhausted_pool_is_bounded_and_cooldowns_expire():
         with patch(
             "researchpilot.providers.llm.OpenAIGenerator.generate", side_effect=Limited()
         ) as generate:
-            with pytest.raises(GroqQuotaExhausted):
+            with pytest.raises(Limited):
                 llm.generate("question")
         assert generate.call_count == 2
         with pytest.raises(GroqQuotaExhausted):
-            pool.choose()
+            pool.choose(max_wait=0)
     with patch("researchpilot.providers.groq_pool.time.monotonic", return_value=111):
         assert pool.choose()[0] in {0, 1}
+
+
+def test_pool_waits_for_recovery_within_budget():
+    pool = GroqKeyPool(["first"])
+    clock = [100.0]
+
+    def advance(seconds):
+        clock[0] += seconds
+
+    with (
+        patch("researchpilot.providers.groq_pool.time.monotonic", side_effect=lambda: clock[0]),
+        patch("researchpilot.providers.groq_pool.time.sleep", side_effect=advance) as sleep,
+    ):
+        pool.limited(0, Limited())
+        assert pool.choose(max_wait=11)[0] == 0
+        sleep.assert_called_once()
+        assert clock[0] >= 110
+
+
+def test_pool_does_not_sleep_beyond_wait_budget():
+    pool = GroqKeyPool(["first"])
+    with (
+        patch("researchpilot.providers.groq_pool.time.monotonic", return_value=100),
+        patch("researchpilot.providers.groq_pool.time.sleep") as sleep,
+    ):
+        pool.limited(0, Limited())
+        with pytest.raises(GroqQuotaExhausted):
+            pool.choose(max_wait=5)
+        sleep.assert_not_called()
